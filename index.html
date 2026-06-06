@@ -441,7 +441,7 @@ try {
 
             <div class="pdf-info">
                 <div class="pdf-title">${item.Title}</div>
-                <div class="pdf-author">${item.Author}</div>
+                <div class="pdf-author">Sir Maududi</div>
             </div>
 
         </div>
@@ -490,10 +490,10 @@ function closePDF(){
 }
 
 /* DOWNLOAD PDF */
-function openTabPDF(){
-    if(!pdfCurrent) return;
-    window.open(pdfCurrent, "_blank");
-}
+  function openTabPDF(){
+      if(!pdfCurrent) return;
+      window.open(pdfCurrent, "_blank");
+  }
 
 function copyLink(slug){
     const link = window.location.origin + "#pdf=" + slug;
