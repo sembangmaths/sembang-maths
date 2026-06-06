@@ -1,6 +1,6 @@
 let pdfCurrent = "";
 
-/* ACTIVE MENU */
+/* ================= ACTIVE MENU ================= */
 function setActive(el){
     document.querySelectorAll(".menu-item").forEach(i=>{
         i.classList.remove("active");
@@ -8,7 +8,7 @@ function setActive(el){
     el.classList.add("active");
 }
 
-/* SIDEBAR */
+/* ================= SIDEBAR ================= */
 function openSidebar(){
     const sidebar = document.getElementById("sidebar");
     const overlay = document.getElementById("overlay");
@@ -36,7 +36,7 @@ function toggleSidebar(){
     }
 }
 
-/* PAGE NAVIGATION */
+/* ================= PAGE NAVIGATION ================= */
 function showPage(page){
 
     const app = document.getElementById("app");
@@ -101,7 +101,7 @@ function showPage(page){
     closeSidebar();
 }
 
-/* INIT */
+/* ================= INIT ================= */
 document.addEventListener("DOMContentLoaded", () => {
 
     showPage("home");
@@ -117,18 +117,23 @@ document.addEventListener("DOMContentLoaded", () => {
         fetch(url)
         .then(res => res.json())
         .then(data => {
+
             const item = data.find(x => x.Slug === slug);
 
             if(item){
                 showPage("pdf");
-                setTimeout(()=> openPDF(item.Link, item.Slug), 300);
+                setTimeout(() => {
+                    openPDF(item.Link, item.Slug);
+                }, 300);
             }
         })
-        .catch(err => console.log("Hash load error:", err));
+        .catch(err => {
+            console.log("Hash load error:", err);
+        });
     }
 });
 
-/* LOAD PDF */
+/* ================= LOAD PDF ================= */
 async function loadPDF(){
 
     const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
@@ -175,7 +180,7 @@ async function loadPDF(){
     }
 }
 
-/* OPEN PDF */
+/* ================= OPEN PDF ================= */
 function openPDF(link, slug){
 
     if(!link) return;
@@ -199,7 +204,7 @@ function openPDF(link, slug){
     if(modal) modal.style.display = "flex";
 }
 
-/* CLOSE PDF */
+/* ================= CLOSE PDF ================= */
 function closePDF(){
     const frame = document.getElementById("pdfFrame");
     const modal = document.getElementById("pdfModal");
@@ -208,13 +213,13 @@ function closePDF(){
     if(frame) frame.src = "";
 }
 
-/* DOWNLOAD */
+/* ================= DOWNLOAD PDF ================= */
 function openTabPDF(){
     if(!pdfCurrent) return;
     window.open(pdfCurrent, "_blank");
 }
 
-/* COPY LINK */
+/* ================= COPY LINK ================= */
 function copyLink(slug){
     const link = window.location.origin + "#pdf=" + slug;
     navigator.clipboard.writeText(link);
