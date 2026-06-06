@@ -10,17 +10,25 @@ function setActive(el){
 
 /* SIDEBAR */
 function openSidebar(){
-    document.getElementById("sidebar").classList.add("active");
-    document.getElementById("overlay").classList.add("active");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    if(sidebar) sidebar.classList.add("active");
+    if(overlay) overlay.classList.add("active");
 }
 
 function closeSidebar(){
-    document.getElementById("sidebar").classList.remove("active");
-    document.getElementById("overlay").classList.remove("active");
+    const sidebar = document.getElementById("sidebar");
+    const overlay = document.getElementById("overlay");
+
+    if(sidebar) sidebar.classList.remove("active");
+    if(overlay) overlay.classList.remove("active");
 }
 
 function toggleSidebar(){
     const sidebar = document.getElementById("sidebar");
+    if(!sidebar) return;
+
     if(sidebar.classList.contains("active")){
         closeSidebar();
     } else {
@@ -31,9 +39,10 @@ function toggleSidebar(){
 /* PAGE NAVIGATION */
 function showPage(page){
 
-    let content = "";
     const app = document.getElementById("app");
     if(!app) return;
+
+    let content = "";
 
     if(page === "home"){
         content = `
@@ -93,7 +102,7 @@ function showPage(page){
 }
 
 /* INIT */
-document.addEventListener("DOMContentLoaded", async () => {
+document.addEventListener("DOMContentLoaded", () => {
 
     showPage("home");
 
@@ -105,19 +114,17 @@ document.addEventListener("DOMContentLoaded", async () => {
 
         const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
 
-        try {
-            const res = await fetch(url);
-            const data = await res.json();
-
+        fetch(url)
+        .then(res => res.json())
+        .then(data => {
             const item = data.find(x => x.Slug === slug);
 
             if(item){
                 showPage("pdf");
-                setTimeout(()=> openPDF(item.Link, item.Slug), 400);
+                setTimeout(()=> openPDF(item.Link, item.Slug), 300);
             }
-        } catch(err){
-            console.log("Error loading hash PDF:", err);
-        }
+        })
+        .catch(err => console.log("Hash load error:", err));
     }
 });
 
@@ -173,9 +180,9 @@ function openPDF(link, slug){
 
     if(!link) return;
 
-    let id = link.match(/[-\w]{25,}/);
+    const id = link.match(/[-\w]{25,}/);
 
-    let view = id
+    const view = id
         ? `https://drive.google.com/file/d/${id[0]}/preview`
         : link;
 
@@ -185,17 +192,23 @@ function openPDF(link, slug){
         location.hash = "pdf=" + slug;
     }
 
-    document.getElementById("pdfFrame").src = view;
-    document.getElementById("pdfModal").style.display = "flex";
+    const frame = document.getElementById("pdfFrame");
+    const modal = document.getElementById("pdfModal");
+
+    if(frame) frame.src = view;
+    if(modal) modal.style.display = "flex";
 }
 
 /* CLOSE PDF */
 function closePDF(){
-    document.getElementById("pdfModal").style.display = "none";
-    document.getElementById("pdfFrame").src = "";
+    const frame = document.getElementById("pdfFrame");
+    const modal = document.getElementById("pdfModal");
+
+    if(modal) modal.style.display = "none";
+    if(frame) frame.src = "";
 }
 
-/* DOWNLOAD PDF */
+/* DOWNLOAD */
 function openTabPDF(){
     if(!pdfCurrent) return;
     window.open(pdfCurrent, "_blank");
