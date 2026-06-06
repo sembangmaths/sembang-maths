@@ -88,9 +88,9 @@ closeSidebar();
 }
 
 /* INIT */
-showPage("home");
+document.addEventListener("DOMContentLoaded", async () => {
 
-document.addEventListener("DOMContentLoaded", async ()=>{
+    showPage("home"); // pindahkan sini
 
     const hash = location.hash;
 
@@ -107,9 +107,7 @@ document.addEventListener("DOMContentLoaded", async ()=>{
 
     if(item){
         showPage("pdf");
-        setTimeout(()=>{
-            openPDF(item.Link, item.Slug);
-        },500);
+        setTimeout(()=> openPDF(item.Link, item.Slug), 500);
     }
 });
 
