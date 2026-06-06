@@ -1,10 +1,6 @@
-window.onerror = function(msg, src, line){
-    console.log("ERROR CAUGHT:", msg, line);
-};
-
 let pdfCurrent = "";
 
-/* ================= ACTIVE MENU ================= */
+/* MENU */
 function setActive(el){
     document.querySelectorAll(".menu-item").forEach(i=>{
         i.classList.remove("active");
@@ -12,35 +8,24 @@ function setActive(el){
     el.classList.add("active");
 }
 
-/* ================= SIDEBAR ================= */
+/* SIDEBAR */
 function openSidebar(){
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-
-    if(sidebar) sidebar.classList.add("active");
-    if(overlay) overlay.classList.add("active");
+    document.getElementById("sidebar")?.classList.add("active");
+    document.getElementById("overlay")?.classList.add("active");
 }
 
 function closeSidebar(){
-    const sidebar = document.getElementById("sidebar");
-    const overlay = document.getElementById("overlay");
-
-    if(sidebar) sidebar.classList.remove("active");
-    if(overlay) overlay.classList.remove("active");
+    document.getElementById("sidebar")?.classList.remove("active");
+    document.getElementById("overlay")?.classList.remove("active");
 }
 
 function toggleSidebar(){
-    const sidebar = document.getElementById("sidebar");
-    if(!sidebar) return;
-
-    if(sidebar.classList.contains("active")){
-        closeSidebar();
-    } else {
-        openSidebar();
-    }
+    const sb = document.getElementById("sidebar");
+    if(!sb) return;
+    sb.classList.toggle("active");
 }
 
-/* ================= PAGE NAVIGATION ================= */
+/* PAGE */
 function showPage(page){
 
     const app = document.getElementById("app");
@@ -56,21 +41,6 @@ function showPage(page){
         </div>
 
         <div class="card">Welcome ke Sembang Maths</div>
-
-        <div class="home-social">
-            <div class="social-icon">
-                <span class="material-symbols-rounded">play_circle</span>
-                <div>YouTube</div>
-            </div>
-            <div class="social-icon">
-                <span class="material-symbols-rounded">send</span>
-                <div>Telegram</div>
-            </div>
-            <div class="social-icon">
-                <span class="material-symbols-rounded">music_note</span>
-                <div>TikTok</div>
-            </div>
-        </div>
         `;
     }
 
@@ -92,12 +62,12 @@ function showPage(page){
             <div class="logo">PDF</div>
         </div>
 
-        <div id="pdfList" class="card">Loading PDF...</div>
+        <div id="pdfList" class="card">Loading...</div>
         `;
 
         app.innerHTML = content;
-        closeSidebar();
         loadPDF();
+        closeSidebar();
         return;
     }
 
@@ -105,86 +75,49 @@ function showPage(page){
     closeSidebar();
 }
 
-/* ================= INIT ================= */
+/* INIT */
 document.addEventListener("DOMContentLoaded", () => {
-
     showPage("home");
-
-    const hash = location.hash;
-
-    if(hash.startsWith("#pdf=")){
-
-        const slug = hash.replace("#pdf=","");
-
-        const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
-
-        fetch(url)
-        .then(res => res.json())
-        .then(data => {
-
-            const item = data.find(x => x.Slug === slug);
-
-            if(item){
-                showPage("pdf");
-                setTimeout(() => {
-                    openPDF(item.Link, item.Slug);
-                }, 300);
-            }
-        })
-        .catch(err => {
-            console.log("Hash load error:", err);
-        });
-    }
 });
 
-/* ================= LOAD PDF ================= */
+/* LOAD PDF */
 async function loadPDF(){
 
     const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
 
-    try {
+    try{
         const res = await fetch(url);
         const data = await res.json();
 
         let html = "";
 
-        data.forEach(item => {
+        data.forEach(item=>{
             html += `
             <div class="pdf-card">
+                <div style="flex:1;display:flex;gap:12px;align-items:center;"
+                     onclick="openPDF('${item.Link}','${item.Slug}')">
 
-                <div onclick="openPDF('${item.Link}','${item.Slug}')"
-                     style="flex:1; display:flex; gap:14px; align-items:center;">
+                    <div class="pdf-icon">📄</div>
 
-                    <div class="pdf-icon">
-                        <span class="material-symbols-rounded">picture_as_pdf</span>
-                    </div>
-
-                    <div class="pdf-info">
+                    <div>
                         <div class="pdf-title">${item.Title}</div>
-                        <div class="pdf-author">${item.Author}</div>
+                        <div>${item.Author}</div>
                     </div>
-
                 </div>
 
-                <div class="pdf-arrow" onclick="copyLink('${item.Slug}')">
-                    <span class="material-symbols-rounded">link</span>
-                </div>
-
+                <div onclick="copyLink('${item.Slug}')">🔗</div>
             </div>
             `;
         });
 
-        const el = document.getElementById("pdfList");
-        if(el) el.innerHTML = html;
+        document.getElementById("pdfList").innerHTML = html;
 
-    } catch (err) {
-        const el = document.getElementById("pdfList");
-        if(el) el.innerHTML = "Gagal load PDF data";
-        console.log(err);
+    } catch(e){
+        document.getElementById("pdfList").innerHTML = "Error load PDF";
     }
 }
 
-/* ================= OPEN PDF ================= */
+/* OPEN PDF */
 function openPDF(link, slug){
 
     if(!link) return;
@@ -195,37 +128,24 @@ function openPDF(link, slug){
         ? `https://drive.google.com/file/d/${id[0]}/preview`
         : link;
 
-    pdfCurrent = view.replace("/preview", "/view");
+    pdfCurrent = view;
 
-    if(slug){
-        location.hash = "pdf=" + slug;
-    }
-
-    const frame = document.getElementById("pdfFrame");
-    const modal = document.getElementById("pdfModal");
-
-    if(frame) frame.src = view;
-    if(modal) modal.style.display = "flex";
+    document.getElementById("pdfFrame").src = view;
+    document.getElementById("pdfModal").style.display = "flex";
 }
 
-/* ================= CLOSE PDF ================= */
+/* CLOSE */
 function closePDF(){
-    const frame = document.getElementById("pdfFrame");
-    const modal = document.getElementById("pdfModal");
-
-    if(modal) modal.style.display = "none";
-    if(frame) frame.src = "";
+    document.getElementById("pdfModal").style.display = "none";
+    document.getElementById("pdfFrame").src = "";
 }
 
-/* ================= DOWNLOAD PDF ================= */
+/* DOWNLOAD */
 function openTabPDF(){
-    if(!pdfCurrent) return;
-    window.open(pdfCurrent, "_blank");
+    if(pdfCurrent) window.open(pdfCurrent, "_blank");
 }
 
-/* ================= COPY LINK ================= */
+/* COPY */
 function copyLink(slug){
-    const link = window.location.origin + "#pdf=" + slug;
-    navigator.clipboard.writeText(link);
-    alert("Link copied!");
+    navigator.clipboard.writeText(location.origin + "#pdf=" + slug);
 }
