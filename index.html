@@ -9,13 +9,14 @@
 
 <link rel="stylesheet" href="style.css">
 <script src="script.js" defer></script>
-
 </head>
 
 <body>
 
+<!-- OVERLAY -->
 <div class="overlay" onclick="closeSidebar()" id="overlay"></div>
 
+<!-- SIDEBAR -->
 <div class="sidebar" id="sidebar">
 
     <div class="sidebar-profile">
@@ -39,7 +40,12 @@
 
 </div>
 
-<div id="app"></div>
+<!-- APP ROOT (IMPORTANT: ada fallback supaya tak blank) -->
+<div id="app">
+    <div style="padding:20px; font-family:system-ui; color:#7a1230;">
+        Loading Sembang Maths...
+    </div>
+</div>
 
 <!-- PDF MODAL -->
 <div id="pdfModal">
@@ -48,6 +54,7 @@
         <div>PDF Viewer</div>
         <button onclick="openTabPDF()">Download</button>
     </div>
+
     <iframe id="pdfFrame"></iframe>
 </div>
 
