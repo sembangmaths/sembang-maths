@@ -77,13 +77,17 @@ content = `
 <div id="pdfList" class="card">Loading PDF...</div>
 `;
 
-document.getElementById("app").innerHTML = content;
+const app = document.getElementById("app");
+if(!app) return;
+app.innerHTML = content;
 closeSidebar();
 loadPDF();
 return;
 }
 
-document.getElementById("app").innerHTML = content;
+const app = document.getElementById("app");
+if(!app) return;
+app.innerHTML = content;
 closeSidebar();
 }
 
