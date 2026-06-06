@@ -1,7 +1,3 @@
-window.onerror = function(msg, src, line){
-    console.log("ERROR CAUGHT:", msg, line);
-};
-
 let pdfCurrent = "";
 
 /* ================= ACTIVE MENU ================= */
