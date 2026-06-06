@@ -90,8 +90,25 @@ closeSidebar();
 /* INIT */
 document.addEventListener("DOMContentLoaded", async () => {
 
-    window.addEventListener("DOMContentLoaded", () => {
     showPage("home");
+
+    const hash = location.hash;
+
+    if(!hash.startsWith("#pdf=")) return;
+
+    const slug = hash.replace("#pdf=","");
+
+    const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
+
+    const res = await fetch(url);
+    const data = await res.json();
+
+    const item = data.find(x => x.Slug === slug);
+
+    if(item){
+        showPage("pdf");
+        setTimeout(()=> openPDF(item.Link, item.Slug), 500);
+    }
 });
 
     const hash = location.hash;
