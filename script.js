@@ -90,7 +90,9 @@ closeSidebar();
 /* INIT */
 document.addEventListener("DOMContentLoaded", async () => {
 
-    showPage("home"); // pindahkan sini
+    window.addEventListener("DOMContentLoaded", () => {
+    showPage("home");
+});
 
     const hash = location.hash;
 
