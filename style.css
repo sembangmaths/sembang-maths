@@ -1,6 +1,3 @@
-<style>
-
-/* ================= BASE ================= */
 html, body{
     margin:0;
     padding:0;
@@ -10,236 +7,7 @@ html, body{
     overflow-x:hidden;
 }
 
-/* ================= HEADER ANIMATION ================= */
-@keyframes wipeIn {
-    from{ transform:translateX(-25px); opacity:0; }
-    to{ transform:translateX(0); opacity:1; }
-}
-
-/* ================= SIDEBAR ================= */
-.sidebar{
-    width:80px;
-    height:100vh;
-    position:fixed;
-    top:0;
-    left:-80px;
-    background:#f5eee4;
-    transition:0.15s ease;
-    z-index:1001;
-
-    display:flex;
-    flex-direction:column;
-    align-items:stretch;
-}
-
-.sidebar.active{
-    left:0;
-}
-
-/* ================= PROFILE ================= */
-.sidebar-profile{
-    height:90px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    cursor:pointer;
-}
-
-.sidebar-profile .material-symbols-rounded{
-    font-size:38px;
-}
-
-/* ================= MENU ITEM ================= */
-.menu-item{
-    height:75px;
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    justify-content:center;
-    gap:3px;
-
-    cursor:pointer;
-    transition:0.2s ease;
-}
-
-.menu-item .material-symbols-rounded{
-    font-size:26px;
-    color:#111;
-}
-
-.label{
-    font-size:11px;
-    color:#333;
-}
-
-/* ================= HOVER ================= */
-.menu-item:hover{
-    background:#f0dde4;
-}
-
-/* ================= ACTIVE ================= */
-.menu-item.active{
-    background:#f0dde4;
-    color:#850a37;
-}
-
-/* ================= HEADER ================= */
-.header{
-    background:#f5eee3;
-    padding:16px 18px;
-    display:flex;
-    align-items:center;
-    gap:12px;
-    border-bottom:1px solid #ddd;
-    animation:wipeIn 1.5s ease;
-}
-
-.logo{
-    font-weight:600;
-    color:#7a1230;
-    font-size:18px;
-}
-
-.hamburger{
-    cursor:pointer;
-    font-size:22px;
-}
-
-/* ================= PDF CARD ================= */
-
-.pdf-card{
-    background:#fff;
-    margin:14px 18px;
-    padding:16px;
-    border-radius:14px;
-
-    display:flex;
-    align-items:center;
-    gap:14px;
-
-    cursor:pointer;
-    transition:.2s ease;
-
-    box-shadow:0 2px 8px rgba(0,0,0,.06);
-}
-
-.pdf-card:hover{
-    transform:translateY(-2px);
-    box-shadow:0 6px 16px rgba(0,0,0,.10);
-}
-
-.pdf-icon{
-    width:50px;
-    height:50px;
-    border-radius:12px;
-    background:#f0dde4;
-
-    display:flex;
-    align-items:center;
-    justify-content:center;
-}
-
-.pdf-icon .material-symbols-rounded{
-    font-size:28px;
-    color:#7a1230;
-}
-
-.pdf-info{ flex:1; }
-
-.pdf-title{
-    font-size:15px;
-    font-weight:600;
-    color:#222;
-    margin-bottom:4px;
-}
-
-.pdf-author{
-    font-size:13px;
-    color:#777;
-}
-
-.pdf-arrow .material-symbols-rounded{
-    color:#999;
-    font-size:24px;
-}
-
-/* ================= HOME SOCIAL ================= */
-.home-social{
-    position:fixed;
-    bottom:18px;
-    left:50%;
-    transform:translateX(-50%);
-    display:flex;
-    gap:4px;
-    background:#f5eee4;
-    padding:8px 12px;
-    border-radius:100px;
-    box-shadow:0 3px 10px rgba(0,0,0,0.2);
-}
-
-.social-icon{
-    display:flex;
-    flex-direction:column;
-    align-items:center;
-    font-size:11px;
-    cursor:pointer;
-    padding:6px 10px;
-    border-radius:100px;
-    min-width:45px;
-}
-
-.social-icon .material-symbols-rounded{
-    font-size:24px;
-}
-
-/* ================= MODAL PDF ================= */
-#pdfModal{
-    position:fixed;
-    inset:0;
-    background:#fff;
-    display:none;
-    z-index:3000;
-    flex-direction:column;
-    overflow:hidden;
-}
-
-#pdfHeader{
-    height:65px;
-    background:#7a1230;
-    color:#fff;
-
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-    padding:0 18px;
-
-    position:relative;
-    z-index:9999;
-}
-
-#pdfFrame{
-    flex:1;
-    width:100%;
-    border:none;
-}
-
-button{
-    background:transparent;
-    border:1px solid #fff;
-    color:#fff;
-    padding:8px 12px;
-    cursor:pointer;
-    font-size:14px;
-}
-
-/* ================= FIX Z-INDEX ================= */
-#app{ position:relative; z-index:1; }
-.card{ position:relative; z-index:1; }
-.sidebar{ z-index:1001; }
-#pdfModal{ z-index:3000; }
-
-.overlay { display:none; }
-.overlay.active { display:block; }
+/* OVERLAY */
 .overlay{
     position:fixed;
     inset:0;
@@ -249,4 +17,130 @@ button{
 }
 .overlay.active{ display:block; }
 
-</style>
+/* SIDEBAR */
+.sidebar{
+    width:80px;
+    height:100vh;
+    position:fixed;
+    top:0;
+    left:-80px;
+    background:#f5eee4;
+    transition:0.2s;
+    z-index:1001;
+    display:flex;
+    flex-direction:column;
+}
+.sidebar.active{ left:0; }
+
+.sidebar-profile{
+    height:90px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+.menu-item{
+    height:75px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+}
+
+.menu-item:hover{
+    background:#f0dde4;
+}
+
+.menu-item.active{
+    background:#f0dde4;
+}
+
+/* HEADER */
+.header{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:15px;
+    border-bottom:1px solid #ddd;
+}
+
+.logo{
+    font-weight:600;
+    color:#7a1230;
+}
+
+.hamburger{
+    cursor:pointer;
+}
+
+/* CARD */
+.card{
+    padding:15px;
+    margin:15px;
+    background:white;
+    border-radius:10px;
+}
+
+/* PDF LIST */
+.pdf-card{
+    background:#fff;
+    margin:12px;
+    padding:14px;
+    border-radius:10px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+}
+
+.pdf-icon{
+    width:45px;
+    height:45px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    background:#f0dde4;
+    border-radius:10px;
+}
+
+.pdf-title{
+    font-weight:600;
+}
+
+/* HOME SOCIAL */
+.home-social{
+    position:fixed;
+    bottom:15px;
+    left:50%;
+    transform:translateX(-50%);
+    display:flex;
+    gap:10px;
+    background:#fff;
+    padding:10px;
+    border-radius:50px;
+}
+
+/* MODAL */
+#pdfModal{
+    position:fixed;
+    inset:0;
+    display:none;
+    flex-direction:column;
+    background:white;
+    z-index:3000;
+}
+
+#pdfHeader{
+    height:60px;
+    background:#7a1230;
+    color:white;
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 15px;
+}
+
+#pdfFrame{
+    flex:1;
+    border:none;
+}
