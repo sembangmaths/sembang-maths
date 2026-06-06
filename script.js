@@ -1,5 +1,3 @@
-<script>
-
 let pdfCurrent = "";
 
 /* ACTIVE */
