@@ -238,4 +238,15 @@ button{
 .sidebar{ z-index:1001; }
 #pdfModal{ z-index:3000; }
 
+.overlay { display:none; }
+.overlay.active { display:block; }
+.overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,0.3);
+    display:none;
+    z-index:1000;
+}
+.overlay.active{ display:block; }
+
 </style>
