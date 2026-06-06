@@ -1,6 +1,6 @@
 let pdfCurrent = "";
 
-/* ACTIVE */
+/* ACTIVE MENU */
 function setActive(el){
     document.querySelectorAll(".menu-item").forEach(i=>{
         i.classList.remove("active");
@@ -20,75 +20,76 @@ function closeSidebar(){
 }
 
 function toggleSidebar(){
-    document.getElementById("sidebar").classList.contains("active")
-        ? closeSidebar()
-        : openSidebar();
+    const sidebar = document.getElementById("sidebar");
+    if(sidebar.classList.contains("active")){
+        closeSidebar();
+    } else {
+        openSidebar();
+    }
 }
 
-/* PAGE */
+/* PAGE NAVIGATION */
 function showPage(page){
 
-let content = "";
+    let content = "";
+    const app = document.getElementById("app");
+    if(!app) return;
 
-if(page === "home"){
-content = `
-<div class="header">
-    <div class="hamburger" onclick="toggleSidebar()">☰</div>
-    <div class="logo">Sembang Maths</div>
-</div>
+    if(page === "home"){
+        content = `
+        <div class="header">
+            <div class="hamburger" onclick="toggleSidebar()">☰</div>
+            <div class="logo">Sembang Maths</div>
+        </div>
 
-<div class="card">Welcome ke Sembang Maths</div>
+        <div class="card">Welcome ke Sembang Maths</div>
 
-<div class="home-social">
-    <div class="social-icon">
-        <span class="material-symbols-rounded">play_circle</span>
-        <div>YouTube</div>
-    </div>
-    <div class="social-icon">
-        <span class="material-symbols-rounded">send</span>
-        <div>Telegram</div>
-    </div>
-    <div class="social-icon">
-        <span class="material-symbols-rounded">music_note</span>
-        <div>TikTok</div>
-    </div>
-</div>
-`;
-}
+        <div class="home-social">
+            <div class="social-icon">
+                <span class="material-symbols-rounded">play_circle</span>
+                <div>YouTube</div>
+            </div>
+            <div class="social-icon">
+                <span class="material-symbols-rounded">send</span>
+                <div>Telegram</div>
+            </div>
+            <div class="social-icon">
+                <span class="material-symbols-rounded">music_note</span>
+                <div>TikTok</div>
+            </div>
+        </div>
+        `;
+    }
 
-if(page === "video"){
-content = `
-<div class="header">
-    <div class="hamburger" onclick="toggleSidebar()">☰</div>
-    <div class="logo">Video</div>
-</div>
+    else if(page === "video"){
+        content = `
+        <div class="header">
+            <div class="hamburger" onclick="toggleSidebar()">☰</div>
+            <div class="logo">Video</div>
+        </div>
 
-<div class="card">Video page</div>
-`;
-}
+        <div class="card">Video page</div>
+        `;
+    }
 
-if(page === "pdf"){
-content = `
-<div class="header">
-    <div class="hamburger" onclick="toggleSidebar()">☰</div>
-    <div class="logo">PDF</div>
-</div>
+    else if(page === "pdf"){
+        content = `
+        <div class="header">
+            <div class="hamburger" onclick="toggleSidebar()">☰</div>
+            <div class="logo">PDF</div>
+        </div>
 
-<div id="pdfList" class="card">Loading PDF...</div>
-`;
+        <div id="pdfList" class="card">Loading PDF...</div>
+        `;
 
-const app = document.getElementById("app");
-if(!app) return;
-app.innerHTML = content;
-closeSidebar();
-loadPDF();
-return;
-}
+        app.innerHTML = content;
+        closeSidebar();
+        loadPDF();
+        return;
+    }
 
-const app = document.getElementById("app");
-if(!app) return;
-app.innerHTML = content;
-closeSidebar();
+    app.innerHTML = content;
+    closeSidebar();
 }
 
 /* INIT */
@@ -98,105 +99,94 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     const hash = location.hash;
 
-    if(!hash.startsWith("#pdf=")) return;
+    if(hash.startsWith("#pdf=")){
 
-    const slug = hash.replace("#pdf=","");
+        const slug = hash.replace("#pdf=","");
 
-    const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
+        const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
 
-    const res = await fetch(url);
-    const data = await res.json();
+        try {
+            const res = await fetch(url);
+            const data = await res.json();
 
-    const item = data.find(x => x.Slug === slug);
+            const item = data.find(x => x.Slug === slug);
 
-    if(item){
-        showPage("pdf");
-        setTimeout(()=> openPDF(item.Link, item.Slug), 500);
-    }
-});
-
-    const hash = location.hash;
-
-    if(!hash.startsWith("#pdf=")) return;
-
-    const slug = hash.replace("#pdf=","");
-
-    const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
-
-    const res = await fetch(url);
-    const data = await res.json();
-
-    const item = data.find(x => x.Slug === slug);
-
-    if(item){
-        showPage("pdf");
-        setTimeout(()=> openPDF(item.Link, item.Slug), 500);
+            if(item){
+                showPage("pdf");
+                setTimeout(()=> openPDF(item.Link, item.Slug), 400);
+            }
+        } catch(err){
+            console.log("Error loading hash PDF:", err);
+        }
     }
 });
 
 /* LOAD PDF */
 async function loadPDF(){
 
-const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
+    const url = "https://opensheet.elk.sh/1_Z68XSNfKmu9kuhISkJDqS03lK7dGbuoeZFfqL1edY4/pdf";
 
-try {
-    const res = await fetch(url);
-    const data = await res.json();
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
 
-    let html = "";
+        let html = "";
 
-    data.forEach(item => {
-   html += `
-    <div class="pdf-card">
+        data.forEach(item => {
+            html += `
+            <div class="pdf-card">
 
-        <div onclick="openPDF('${item.Link}','${item.Slug}')" style="flex:1; display:flex; gap:14px; align-items:center;">
+                <div onclick="openPDF('${item.Link}','${item.Slug}')"
+                     style="flex:1; display:flex; gap:14px; align-items:center;">
 
-            <div class="pdf-icon">
-                <span class="material-symbols-rounded">picture_as_pdf</span>
+                    <div class="pdf-icon">
+                        <span class="material-symbols-rounded">picture_as_pdf</span>
+                    </div>
+
+                    <div class="pdf-info">
+                        <div class="pdf-title">${item.Title}</div>
+                        <div class="pdf-author">${item.Author}</div>
+                    </div>
+
+                </div>
+
+                <div class="pdf-arrow" onclick="copyLink('${item.Slug}')">
+                    <span class="material-symbols-rounded">link</span>
+                </div>
+
             </div>
+            `;
+        });
 
-            <div class="pdf-info">
-                <div class="pdf-title">${item.Title}</div>
-                <div class="pdf-author">${item.Author}</div>
-            </div>
+        const el = document.getElementById("pdfList");
+        if(el) el.innerHTML = html;
 
-        </div>
-
-        <div class="pdf-arrow" onclick="copyLink('${item.Slug}')">
-            <span class="material-symbols-rounded">link</span>
-        </div>
-
-    </div>
-`;
-});
-
-    document.getElementById("pdfList").innerHTML = html;
-
-} catch (err) {
-    document.getElementById("pdfList").innerHTML =
-        "Gagal load PDF data";
-}
+    } catch (err) {
+        const el = document.getElementById("pdfList");
+        if(el) el.innerHTML = "Gagal load PDF data";
+        console.log(err);
+    }
 }
 
 /* OPEN PDF */
 function openPDF(link, slug){
 
-if(!link) return;
+    if(!link) return;
 
-let id = link.match(/[-\w]{25,}/);
+    let id = link.match(/[-\w]{25,}/);
 
-let view = id 
-    ? `https://drive.google.com/file/d/${id[0]}/preview`
-    : link;
+    let view = id
+        ? `https://drive.google.com/file/d/${id[0]}/preview`
+        : link;
 
-pdfCurrent = view.replace("/preview", "/view");
+    pdfCurrent = view.replace("/preview", "/view");
 
-if(slug){
-    location.hash = "pdf=" + slug;
-}
+    if(slug){
+        location.hash = "pdf=" + slug;
+    }
 
-document.getElementById("pdfFrame").src = view;
-document.getElementById("pdfModal").style.display = "flex";
+    document.getElementById("pdfFrame").src = view;
+    document.getElementById("pdfModal").style.display = "flex";
 }
 
 /* CLOSE PDF */
@@ -211,6 +201,7 @@ function openTabPDF(){
     window.open(pdfCurrent, "_blank");
 }
 
+/* COPY LINK */
 function copyLink(slug){
     const link = window.location.origin + "#pdf=" + slug;
     navigator.clipboard.writeText(link);
