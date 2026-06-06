@@ -195,5 +195,3 @@ function copyLink(slug){
     navigator.clipboard.writeText(link);
     alert("Link copied!");
 }
-
-</script>
