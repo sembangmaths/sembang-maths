@@ -390,13 +390,17 @@ function openTrial(trialName){
     root.style.display = "none";    
     list.style.display = "block";
 
-    // load data
+        document.getElementById("backBtn").style.display = "block";
+
     loadPDF(trialName);
 
-    function backToPdfRoot(){
+    
+}
+
+function backToPdfRoot(){
     document.getElementById("pdfRoot").style.display = "block";
     document.getElementById("pdfList").style.display = "none";
-}
+    document.getElementById("backBtn").style.display = "none";
 }
 
 /* PAGE */
@@ -409,6 +413,7 @@ content = `
 <div class="header">
     <div class="hamburger" onclick="toggleSidebar()">☰</div>
     <div class="logo">Sembang Maths</div>
+    
 </div>
 
 <div class="card">Welcome ke Sembang Maths</div>
@@ -461,6 +466,11 @@ content = `
     <div class="hamburger" onclick="toggleSidebar()">☰</div>
     <div class="logo">PDF</div>
 
+<div id="backBtn"
+     style="margin-left:auto; cursor:pointer; color:#7a1230; display:none;"
+     onclick="backToPdfRoot()">
+    <span class="material-symbols-rounded">close</span>
+</div>
 
 </div>
 
