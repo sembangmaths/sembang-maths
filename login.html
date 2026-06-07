@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Login - Sembang Maths</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+<style>
+
+*{
+    box-sizing:border-box;
+}
+
+body{
+    margin:0;
+    font-family:system-ui, Arial;
+    background:#f5eee4;
+    height:100vh;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+}
+
+/* CLOSE BUTTON */
+.close-btn{
+    position:absolute;
+    top:20px;
+    left:20px;
+    font-size:26px;
+    cursor:pointer;
+    color:#7a1230;
+}
+
+/* CARD */
+.login-box{
+    width:320px;
+    background:#fff6ef;
+    padding:28px 22px;
+    border-radius:18px;
+    box-shadow:0 10px 25px rgba(0,0,0,0.1);
+    text-align:center;
+}
+
+/* TITLE */
+.title{
+    font-size:22px;
+    font-weight:700;
+    color:#7a1230;
+    margin-bottom:18px;
+}
+
+/* INPUT */
+.input-box{
+    text-align:left;
+    margin-bottom:14px;
+}
+
+label{
+    font-size:13px;
+    color:#555;
+}
+
+input{
+    width:100%;
+    padding:10px 12px;
+    margin-top:5px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    outline:none;
+    font-size:14px;
+    box-sizing:border-box;
+}
+
+input:focus{
+    border-color:#7a1230;
+}
+
+/* BUTTON */
+
+.login-box button{
+    display:block;
+    margin:10px auto 0;
+}
+
+button{
+    width:140px;
+    padding:10px 16px;
+    background:#7a1230;
+    color:white;
+    border:none;
+    border-radius:12px;
+    font-weight:600;
+    cursor:pointer;
+    margin-top:10px;
+}
+
+button:hover{
+    background:#5f0e25;
+}
+
+/* LINKS */
+.small-text{
+    font-size:12px;
+    color:#666;
+    margin-top:10px;
+}
+
+.link{
+    color:#7a1230;
+    font-weight:600;
+    cursor:pointer;
+}
+
+.divider{
+    display:flex;
+    align-items:center;
+    margin:12px 0;
+    color:#aaa;
+    font-size:12px;
+}
+
+.divider::before,
+.divider::after{
+    content:"";
+    flex:1;
+    height:1px;
+    background:#ddd;
+    margin:0 8px;
+}
+
+</style>
+</head>
+
+<body>
+
+<!-- CLOSE -->
+<div class="close-btn" onclick="window.location.href='index.html'">
+    <span class="material-symbols-rounded">close</span>
+</div>
+
+<!-- LOGIN BOX -->
+<div class="login-box">
+
+    <div class="title">Sembang Maths</div>
+
+    <div class="input-box">
+        <label>Login</label>
+        <input type="email" placeholder="Enter email">
+    </div>
+
+    <div class="input-box">
+        <label>Password</label>
+        <input type="password" placeholder="Enter password">
+    </div>
+
+    <button onclick="login()">LOGIN</button>
+
+    <div class="small-text">Forgot your password?</div>
+
+    <div class="divider">or</div>
+
+    <div class="small-text">
+        Not yet registered? <span class="link">Sign up</span>
+    </div>
+
+    <div class="small-text" style="margin-top:14px;">
+        By using this application, you agree to the Terms of use and Privacy policy
+    </div>
+
+</div>
+
+<script>
+function login(){
+    localStorage.setItem("loggedIn", "true");
+    window.location.href = "index.html";
+}
+</script>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+  authDomain: "sembang-maths.firebaseapp.com",
+  projectId: "sembang-maths",
+  storageBucket: "sembang-maths.firebasestorage.app",
+  messagingSenderId: "949561490562",
+  appId: "1:949561490562:web:0adfde880f6de95c03489b"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  window.login = function () {
+    const email = document.querySelectorAll("input")[0].value;
+    const password = document.querySelectorAll("input")[1].value;
+
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        window.location.href = "index.html";
+      })
+      .catch((error) => {
+        alert("Login gagal: " + error.message);
+      });
+  }
+</script>
+</body>
+</html>
