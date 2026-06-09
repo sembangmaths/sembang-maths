@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sembang Maths</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+<link rel="stylesheet" href="video.css">
+
+</head>
+
+<body>
+
+<div class="overlay" onclick="closeSidebar()" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+
+    <div class="sidebar-profile" onclick="window.location.href='login.html'">
+    <span class="material-symbols-rounded">person</span>
+</div>
+
+<div class="menu-item" onclick="setActive(this); window.location.href='index.html'">
+    <span class="material-symbols-rounded">home</span>
+    <div class="label">Home</div>
+</div>
+
+<div class="menu-item active" onclick="setActive(this)">
+    <span class="material-symbols-rounded">play_circle</span>
+    <div class="label">Video</div>
+</div>
+
+<div class="menu-item" onclick="setActive(this); window.location.href='pdf.html'">
+    <span class="material-symbols-rounded">description</span>
+    <div class="label">PDF</div>
+</div>
+
+</div>
+
+<div id="app"></div>
+
+<script> 
+
+/* ACTIVE */
+function setActive(el){
+    document.querySelectorAll(".menu-item").forEach(i=>{
+        i.classList.remove("active");
+    });
+    el.classList.add("active");
+}
+
+/* SIDEBAR */
+function openSidebar(){
+    document.getElementById("sidebar").classList.add("active");
+    document.getElementById("overlay").classList.add("active");
+}
+
+function closeSidebar(){
+    document.getElementById("sidebar").classList.remove("active");
+    document.getElementById("overlay").classList.remove("active");
+}
+
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.contains("active")
+        ? closeSidebar()
+        : openSidebar();
+}
+
+
+/* PAGE */
+function showPage(page){
+
+let content = "";
+if(page === "video"){
+content = `
+<div class="header">
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+    <div class="logo">Video</div>
+
+</div>
+
+<div id="videoList">Loading...</div>
+`;
+
+document.getElementById("app").innerHTML = content;
+closeSidebar();
+
+setTimeout(() => {
+  loadVideos();
+}, 100);
+
+return;
+}
+document.getElementById("app").innerHTML = content;
+closeSidebar();
+}
+
+/* INIT */
+showPage("video");
+
+</script>
+
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import { getFirestore, collection, getDocs } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// Import the functions you need from the SDKs you need
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
+
+// Your web app's Firebase configuration
+const firebaseConfig = {
+  apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+  authDomain: "sembang-maths.firebaseapp.com",
+  projectId: "sembang-maths",
+  storageBucket: "sembang-maths.firebasestorage.app",
+  messagingSenderId: "949561490562",
+  appId: "1:949561490562:web:0adfde880f6de95c03489b"
+};
+
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);  
+
+const db = getFirestore(app);
+const auth = getAuth();
+
+onAuthStateChanged(auth, (user) => {
+  if (user) {
+    window.currentUser = {
+      email: user.email,
+      uid: user.uid,
+      loggedIn: true
+    };
+
+    console.log("LOGIN USER:", user.email);
+
+    // reload video bila user ready
+    if (typeof loadVideos === "function") {
+      loadVideos();
+    }
+
+  } else {
+    window.currentUser = {
+      loggedIn: false
+    };
+  }
+});
+
+// contoh user (nanti kita connect login)
+const user = {
+  loggedIn: false,
+  group: "A"
+};
+
+//  LOAD VIDEO
+window.loadVideos = async function(){
+
+  const videoContainer = document.getElementById("videoList");
+
+  if(!videoContainer){
+    console.log("videoList belum wujud");
+    return;
+  }
+
+  try {
+    const querySnapshot = await getDocs(collection(db, "videos"));
+
+    console.log("DATA:", querySnapshot.size);
+
+    let html = "";
+
+    querySnapshot.forEach((doc) => {
+      const v = doc.data();
+
+      console.log(v);
+
+      if (
+  v.access === "free" ||
+  v.allowedEmails?.includes(window.currentUser?.email)
+) {
+
+  // ❌ kalau tak ada apa-apa video, terus skip
+  if (!v.youtubeIds && !v.youtubeId) return;
+
+  html += `<div style="margin:10px;padding:10px;border-radius:10px;">
+    <h3>${v.title}</h3>`;
+
+  // ✅ kalau ada array (baru)
+  if (v.youtubeIds && Array.isArray(v.youtubeIds) && v.youtubeIds.length > 0) {
+    v.youtubeIds.forEach(id => {
+      html += `
+        <div class="video-wrapper" style="margin-top:10px;">
+          <iframe src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>
+        </div>
+      `;
+    });
+  }
+
+  // ✅ kalau masih guna single (lama)
+  else if (v.youtubeId) {
+    html += `
+      <div class="video-wrapper" style="margin-top:10px;">
+        <iframe src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen></iframe>
+      </div>
+    `;
+  }
+
+  html += `</div>`;
+}
+    });
+
+    videoContainer.innerHTML = html;
+
+  } catch (err) {
+    console.error(err);
+    videoContainer.innerHTML = "Error load video";
+  }
+}
+
+loadVideos();
+
+</script>
+
+
+
+</body>
+
+</html>

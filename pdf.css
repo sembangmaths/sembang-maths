@@ -1,0 +1,228 @@
+body{
+    margin:0;
+    padding:0;
+    height:100%;
+    background:#f5eee4;
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial;
+    overflow-x:hidden;
+}
+
+/* Animation */
+/* ================= HEADER ANIMATION ================= */
+@keyframes wipeIn {
+    from{ transform:translateX(-25px); opacity:0; }
+    to{ transform:translateX(0); opacity:1; }
+}
+/* ================= CARD ANIMATION ================= */
+@keyframes wipeUp {
+    from{ transform:translatey(25px); opacity:0; }
+    to{ transform:translateX(0); opacity:1; }
+}
+
+/* ================= SIDEBAR ================= */
+.sidebar{
+    width:80px;
+    height:100vh;
+    position:fixed;
+    top:0;
+    left:-80px;
+    background:#f5eee4;
+    transition:0.15s ease;
+    z-index:1001;
+
+    display:flex;
+    flex-direction:column;
+    align-items:stretch;
+}
+
+.sidebar.active{
+    left:0;
+}
+
+/* ================= PROFILE ================= */
+.sidebar-profile{
+    height:90px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    cursor:pointer;
+}
+
+.sidebar-profile .material-symbols-rounded{
+    font-size:38px;
+}
+
+    .overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    display: none;
+    z-index: 1000;
+}
+.overlay.active {
+    display: block;
+}
+
+
+/* ================= MENU ITEM ================= */
+.menu-item{
+    height:75px;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    gap:3px;
+
+    cursor:pointer;
+    transition:0.2s ease;
+}
+
+.menu-item .material-symbols-rounded{
+    font-size:26px;
+    color:#111;
+}
+
+.label{
+    font-size:11px;
+    color:#333;
+}
+
+/* ================= HOVER ================= */
+.menu-item:hover{
+    background:#f0dde4;
+}
+
+/* ================= ACTIVE ================= */
+.menu-item.active{
+    background:#f0dde4;
+    color:#850a37;
+}
+
+/* ================= HEADER ================= */
+.header{
+    background:#f5eee3;
+    padding:16px 18px;
+    display:flex;
+    align-items:center;
+    gap:12px;
+    border-bottom:1px solid #ddd;
+    
+}
+
+.logo{
+    font-weight:600;
+    color:#7a1230;
+    font-size:20px;
+    animation:wipeIn 1.5s ease;
+}
+
+.hamburger{
+    cursor:pointer;
+    font-size:22px;
+    color:#7a1230;
+    animation:wipeIn 1.5s ease;
+}
+
+.pdf-card{
+    background:#fff;
+    margin:14px 18px;
+    padding:16px;
+    border-radius:14px;
+    animation:wipeUp 1.5s ease;
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+    cursor:pointer;
+    transition:.2s ease;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.pdf-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(0,0,0,.10);
+}
+
+.pdf-icon{
+    width:50px;
+    height:50px;
+    border-radius:12px;
+    background:#f0dde4;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.pdf-icon .material-symbols-rounded{
+    font-size:28px;
+    color:#7a1230;
+}
+
+.pdf-info{ flex:1; }
+
+.pdf-title{
+    font-size:15px;
+    font-weight:600;
+    color:#222;
+    margin-bottom:4px;
+}
+
+.pdf-author{
+    font-size:13px;
+    color:#777;
+}
+
+.pdf-arrow .material-symbols-rounded{
+    color:#999;
+    font-size:24px;
+}
+
+/* ================= MODAL PDF ================= */
+#pdfModal{
+    position:fixed;
+    inset:0;
+    background:#fff;
+    display:none;
+    z-index:3000;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+#pdfHeader{
+    height:50px;
+    background:#7a1230;
+    color:#fff;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 18px;
+
+    position:relative;
+    z-index:9999;
+}
+
+#pdfFrame{
+    flex:1;
+    width:100%;
+    border:none;
+}
+
+button{
+    background:transparent;
+    border:1px solid #fff;
+    color:#fff;
+    padding:8px 12px;
+    cursor:pointer;
+    font-size:14px;
+    border-radius:5px;
+}
+
+/* ================= FIX Z-INDEX ================= */
+#app{ position:relative; z-index:1; }
+.card{ position:relative; z-index:1; }
+.sidebar{ z-index:1001; }
+#pdfModal{ z-index:3000; }
