@@ -8,6 +8,7 @@ body{
     overflow-x:hidden;
 }
 
+
 /* Animation */
 /* ================= HEADER ANIMATION ================= */
 @keyframes wipeIn {
@@ -161,3 +162,89 @@ body{
 #app{ position:relative; z-index:1; }
 .card{ position:relative; z-index:1; }
 .sidebar{ z-index:1001; }
+
+/* HERO */
+
+.hero-card{
+    margin:20px;
+    padding:28px;
+    border-radius:24px;
+    background:rgba(255,255,255,0.35);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    text-align:left;
+}
+
+.hero-badge{
+    display:inline-block;
+    padding:8px 14px;
+    border-radius:999px;
+    font-size:12px;
+    font-weight:600;
+    margin-bottom:16px;
+    background:rgba(0,0,0,0.05);
+}
+
+.hero-card h1{
+    margin:0;
+    font-size:28px;
+    line-height:1.2;
+}
+
+.hero-card p{
+    color:#777;
+    margin-top:12px;
+    line-height:1.6;
+}
+
+.hero-btn{
+    margin-top:20px;
+    border:none;
+    padding:14px 24px;
+    border-radius:14px;
+    cursor:pointer;
+    font-size:15px;
+    font-weight:600;
+}
+
+/* QUICK MENU */
+
+.quick-section{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    padding:0 20px;
+}
+
+.quick-card{
+    background:rgba(255,255,255,0.35);
+    backdrop-filter:blur(14px);
+    -webkit-backdrop-filter:blur(14px);
+    border-radius:20px;
+    padding:22px;
+    box-shadow:0 10px 30px rgba(0,0,0,0.2);
+    cursor:pointer;
+    transition:0.3s;
+}
+
+.quick-card:hover{
+    transform:translateY(-4px);
+}
+
+.quick-card span{
+    font-size:38px;
+    margin-bottom:12px;
+}
+
+.quick-card h3{
+    margin:0;
+    font-size:18px;
+}
+
+.quick-card p{
+    margin-top:8px;
+    color:#777;
+    font-size:14px;
+}
+
