@@ -117,6 +117,11 @@ content = `
     <div class="hamburger" onclick="toggleSidebar()">☰</div>
     <div class="logo">PDF</div>
 
+<div class="tab-bar">
+    <div class="tab active" onclick="switchTab('soalan', this)">Soalan</div>
+    <div class="tab" onclick="switchTab('skema', this)">Skema</div>
+</div>
+
 <div id="backBtn"
      style="margin-left:auto; cursor:pointer; color:#7a1230; display:none;"
      onclick="backToPdfRoot()">
