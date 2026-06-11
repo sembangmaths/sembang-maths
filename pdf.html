@@ -346,21 +346,20 @@ function copyLink(slug){
 
 let currentTab = "soalan";
 
-function switchTab(tab){
+function switchTab(tab, el){
 
     currentTab = tab;
 
-    // update UI tab
-    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
-    event.target.classList.add("active");
+    document.querySelectorAll(".tab").forEach(t=>{
+        t.classList.remove("active");
+    });
 
-    // reload ikut tab
+    el.classList.add("active");
+
     if(tab === "soalan"){
-        loadPDF("Trial 2024"); // atau filter soalan
-    }
-
-    if(tab === "skema"){
-        loadSkemaPDF("Trial 2024"); // kita buat function baru
+        loadPDF(selectedTrial);
+    }else{
+        loadSkemaPDF(selectedTrial);
     }
 }
 
