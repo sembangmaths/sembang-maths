@@ -242,6 +242,55 @@ async function loadPDF(trial){
         `;
     }
 }
+    async function loadSkemaPDF(trial){
+
+    const list = document.getElementById("pdfList");
+
+    list.innerHTML = `
+        <div style="text-align:center; padding:20px; color:#777;">
+            Loading...
+        </div>
+    `;
+
+    const url = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQDJJ9QF61niN-W1etNpPBcz5gbJ6-syVIgR_RHMZ0r811P_8_2n_LEF0j2s7PJwgcQptZYYw6JfQ7SCEnbOVirJ-kUTE7_V9PSftSmqeaCSevDbVnkG7g82LGg8vVW0XGns2o7uh1egGnadJISjma0x_gfq2vGnT7UbKdbZxRgXSY8Gpl8-IIhyvhiSht8-kecjSl2odcgsG5TD2yT--WhNoyIbwLbpMBKybNoGwdWsdHKTQLnXMzbRCaIgjBzQ3SgU1W1PspUYSdF7sE10d0oLtVY8Q&lib=MaNxOnVwgQOM3tr6T5bPZndwti6VF2dMb";
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        let html = "";
+
+        data
+        .filter(item => item.Trial === trial && item.Type === "Skema")
+        .forEach(item => {
+
+            html += `
+            <div class="pdf-card">
+
+                <div onclick="openPDF('${item.Link}','')" 
+                     style="flex:1; display:flex; gap:14px; align-items:center;">
+
+                    <div class="pdf-icon">
+                        <span class="material-symbols-rounded">description</span>
+                    </div>
+
+                    <div class="pdf-info">
+                        <div class="pdf-title">${item.Title}</div>
+                        <div class="pdf-author">Skema Jawapan</div>
+                    </div>
+
+                </div>
+
+            </div>
+            `;
+        });
+
+        list.innerHTML = html;
+
+    } catch (err) {
+        list.innerHTML = `<div style="text-align:center;color:red;">Error load Skema</div>`;
+    }
+}
 
 /* INIT */
 showPage("pdf");
@@ -288,6 +337,26 @@ function copyLink(slug){
     const link = window.location.origin + "#pdf=" + slug;
     navigator.clipboard.writeText(link);
     alert("Link copied!");
+}
+
+let currentTab = "soalan";
+
+function switchTab(tab){
+
+    currentTab = tab;
+
+    // update UI tab
+    document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+    event.target.classList.add("active");
+
+    // reload ikut tab
+    if(tab === "soalan"){
+        loadPDF("Trial 2024"); // atau filter soalan
+    }
+
+    if(tab === "skema"){
+        loadSkemaPDF("Trial 2024"); // kita buat function baru
+    }
 }
 
     
