@@ -221,6 +221,26 @@ button{
     border-radius:5px;
 }
 
+.tab-bar{
+    display:flex;
+    background:#fff;
+    border-bottom:1px solid #ddd;
+}
+
+.tab{
+    flex:1;
+    text-align:center;
+    padding:12px;
+    font-weight:600;
+    cursor:pointer;
+    color:#777;
+}
+
+.tab.active{
+    color:#7a1230;
+    border-bottom:3px solid #7a1230;
+}
+
 /* ================= FIX Z-INDEX ================= */
 #app{ position:relative; z-index:1; }
 .card{ position:relative; z-index:1; }
