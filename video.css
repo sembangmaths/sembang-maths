@@ -164,8 +164,8 @@ body{
 .video-info{ flex:1; }
 
 .video-title{
-    font-size:5px;
-    font-weight:200;
+    font-size:15px;
+    font-weight:600;
     color:#222;
     margin-bottom:4px;
 }
