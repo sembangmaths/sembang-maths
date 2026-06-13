@@ -188,15 +188,28 @@ window.loadVideos = async function(){
     <h3>${v.title}</h3>`;
 
   // ✅ kalau ada array (baru)
-  if (v.youtubeIds && Array.isArray(v.youtubeIds) && v.youtubeIds.length > 0) {
-    v.youtubeIds.forEach(id => {
-      html += `
-        <div class="video-wrapper" style="margin-top:10px;">
-          <iframe src="https://www.youtube.com/embed/${id}" allowfullscreen></iframe>
-        </div>
-      `;
-    });
-  }
+if (v.youtubeIds && Array.isArray(v.youtubeIds)) {
+
+  v.youtubeIds.forEach(id => {
+
+    html += `
+      <div class="video-item"
+           onclick="openVideo('${id}')">
+
+          <img class="video-thumb"
+               src="https://img.youtube.com/vi/${id}/mqdefault.jpg">
+
+          <div class="video-info">
+              <div class="video-title">
+                  ${v.title}
+              </div>
+          </div>
+
+      </div>
+    `;
+  });
+
+}
 
   // ✅ kalau masih guna single (lama)
   else if (v.youtubeId) {
@@ -221,10 +234,44 @@ window.loadVideos = async function(){
 
 loadVideos();
 
+window.openVideo = function(id){
+
+  document.getElementById("videoModal")
+          .classList.add("show");
+
+  document.getElementById("videoFrame")
+          .src = `https://www.youtube.com/embed/${id}?autoplay=1`;
+}
+
+window.closeVideo = function(){
+
+  document.getElementById("videoModal")
+          .classList.remove("show");
+
+  document.getElementById("videoFrame")
+          .src = "";
+}
+
 </script>
 
 
+<div id="videoModal" class="video-modal">
 
+  <div class="video-modal-content">
+
+      <span class="close-video"
+            onclick="closeVideo()">✕</span>
+
+      <div class="video-player">
+          <iframe id="videoFrame"
+                  allowfullscreen>
+          </iframe>
+      </div>
+
+  </div>
+
+</div>
+    
 </body>
 
 </html>
