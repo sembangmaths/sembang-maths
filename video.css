@@ -147,6 +147,7 @@ background: transparent;
     display:flex;
     align-items:center;
     gap:12px;
+    position:relative;
 
     background:white;
     margin:10px;
@@ -156,6 +157,17 @@ background: transparent;
     cursor:pointer;
 
     animation:wipeUp .5s ease;
+}
+
+.video-item::after{
+    content:"▶";
+    position:absolute;
+    left:55px;
+    top:50%;
+    transform:translateY(-50%);
+    color:white;
+    font-size:28px;
+    text-shadow:0 0 8px rgba(0,0,0,.8);
 }
 
 .video-item:hover{
