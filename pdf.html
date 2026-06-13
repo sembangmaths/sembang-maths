@@ -20,18 +20,18 @@
     <span class="material-symbols-rounded">person</span>
 </div>
 
-<div class="menu-item" onclick="window.location.href='index.html'">
+<div class="menu-item" onclick="setActive(this); window.location.href='index.html'">
     <span class="material-symbols-rounded">home</span>
     <div class="label">Home</div>
 </div>
 
-<div class="menu-item" onclick="window.location.href='video.html'">
-    <span class="material-symbols-rounded">play_circle</span>
+<div class="menu-item" onclick="setActive(this); window.location.href='video.html'">
+    <span class="material-symbols-rounded">description</span>
     <div class="label">Video</div>
 </div>
 
-<div class="menu-item active">
-    <span class="material-symbols-rounded">description</span>
+<div class="menu-item active" onclick="setActive(this)">
+    <span class="material-symbols-rounded">play_circle</span>
     <div class="label">PDF</div>
 </div>
 
@@ -79,6 +79,51 @@ function toggleSidebar(){
         : openSidebar();
 }
 
+/* ================= CHAPTER DATA ================= */
+const trials = {
+  Soalan: [
+    { name: "Trial 2024" },
+    { name: "Trial 2025" },
+  ],
+
+  Skema: [
+    { name: "Skema Trial 2024" },
+    { name: "Skema Trial 2025" },
+  ],
+};
+
+/* ================= TAB SWITCH ================= */
+function switchForm(Soalan, el){
+
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  el.classList.add("active");
+
+  renderTrials(Soalan);
+}
+
+
+function renderTrials(Soalan){
+
+  const root = document.getElementById("pdfRoot");
+
+  let html = "";
+
+  trials[Soalan].forEach(c=>{
+    html += `
+      <div class="pdf-card" onclick="openTrial('${c.name}')">
+        <div class="pdf-icon">
+          <span class="material-symbols-rounded">folder</span>
+        </div>
+        <div class="pdf-info">
+          <div class="pdf-title">${c.name.split(":")[0]}</div>
+        </div>
+      </div>
+    `;
+  });
+
+  root.innerHTML = html;
+}
+
 function openTrial(trialName){
 
     selectedTrial = trialName;
@@ -107,59 +152,38 @@ function backToPdfRoot(){
     document.getElementById("backBtn").style.display = "none";
 }
 
-function showPage(page){
+/* ================= PAGE ================= */
+function showPage(){
 
-let content = "";
-
-if(page === "pdf"){
-content = `
-<div class="header">
+  const content = `
+  <div class="header">
     <div class="hamburger" onclick="toggleSidebar()">☰</div>
-    <div class="logo">PDF</div>
+    <div class="logo">Video</div>
 
-<div class="tab-bar">
-    <div class="tab active" onclick="switchTab('soalan', this)">Soalan</div>
-    <div class="tab" onclick="switchTab('skema', this)">Skema</div>
+<div class="tabs">
+  <div class="tab-slider" id="tabSlider"></div>
+
+  <div class="tab active" onclick="switchForm('Soalan', this)">Soalan</div>
+  <div class="tab" onclick="switchForm('Skema', this)">Skema</div>
 </div>
 
-<div id="backBtn"
-     style="margin-left:auto; cursor:pointer; color:#7a1230; display:none;"
-     onclick="backToPdfRoot()">
-    <span class="material-symbols-rounded">close</span>
-</div>
-
-</div>
-
-<div id="pdfRoot">
-    <div class="pdf-card" onclick="openTrial('Trial 2024')">
-        <div class="pdf-icon">
-            <span class="material-symbols-rounded">folder</span>
-        </div>
-        <div class="pdf-info">
-            <div class="pdf-title">Trial 2024</div>
-        </div>
+    <div id="backBtn"
+      style="margin-left:auto;cursor:pointer;color:#7a1230;display:none;"
+      onclick="backToPdfRoot()">
+      <span class="material-symbols-rounded">close</span>
     </div>
+  </div>
 
-    <div class="pdf-card" onclick="openTrial('Trial 2025')">
-        <div class="pdf-icon">
-            <span class="material-symbols-rounded">folder</span>
-        </div>
-        <div class="pdf-info">
-            <div class="pdf-title">Trial 2025</div>
-        </div>
-    </div>
-</div>
+  <div id="pdfRoot"></div>
+  <div id="pdfList" style="display:none;"></div>
+  `;
 
-<div id="pdfList" style="display:none;"></div>
-`;
+  document.getElementById("app").innerHTML = content;
+  closeSidebar();
 
-document.getElementById("app").innerHTML = content;
-closeSidebar();
-return;
-}
-
-document.getElementById("app").innerHTML = content;
-closeSidebar();
+  setTimeout(()=>{
+    renderTrials("Soalan"); // DEFAULT SOALAN
+  },100);
 }
 
 document.addEventListener("click", function(e){
@@ -167,6 +191,25 @@ document.addEventListener("click", function(e){
         backToPdfRoot();
     }
 });
+
+function switchForm(type, el){
+
+  document.querySelectorAll(".tab").forEach(t=>{
+    t.classList.remove("active");
+  });
+
+  el.classList.add("active");
+
+  renderTrials(type);
+
+  const slider = document.getElementById("tabSlider");
+
+  if(type === "Skema"){
+    slider.style.transform = "translateX(100%)";
+  } else {
+    slider.style.transform = "translateX(0%)";
+  }
+}
 
 window.addEventListener("load", async ()=>{
 
@@ -197,11 +240,12 @@ async function loadPDF(trial){
     const list = document.getElementById("pdfList");
 
     // 🔥 show loading dulu
-    list.innerHTML = `
-        <div style="text-align:center; padding:20px; color:#777;">
-            Loading...
-        </div>
-    `;
+list.innerHTML = `
+    <div class="loading"
+         style="text-align:center; padding:15px; color:#777;">
+        Loading...
+    </div>
+`;
 
     const url = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQDJJ9QF61niN-W1etNpPBcz5gbJ6-syVIgR_RHMZ0r811P_8_2n_LEF0j2s7PJwgcQptZYYw6JfQ7SCEnbOVirJ-kUTE7_V9PSftSmqeaCSevDbVnkG7g82LGg8vVW0XGns2o7uh1egGnadJISjma0x_gfq2vGnT7UbKdbZxRgXSY8Gpl8-IIhyvhiSht8-kecjSl2odcgsG5TD2yT--WhNoyIbwLbpMBKybNoGwdWsdHKTQLnXMzbRCaIgjBzQ3SgU1W1PspUYSdF7sE10d0oLtVY8Q&lib=MaNxOnVwgQOM3tr6T5bPZndwti6VF2dMb";
 
@@ -245,55 +289,6 @@ async function loadPDF(trial){
                 Error load PDF
             </div>
         `;
-    }
-}
-    async function loadSkemaPDF(trial){
-
-    const list = document.getElementById("pdfList");
-
-    list.innerHTML = `
-        <div style="text-align:center; padding:20px; color:#777;">
-            Loading...
-        </div>
-    `;
-
-    const url = "https://script.googleusercontent.com/macros/echo?user_content_key=AUkAhnQDJJ9QF61niN-W1etNpPBcz5gbJ6-syVIgR_RHMZ0r811P_8_2n_LEF0j2s7PJwgcQptZYYw6JfQ7SCEnbOVirJ-kUTE7_V9PSftSmqeaCSevDbVnkG7g82LGg8vVW0XGns2o7uh1egGnadJISjma0x_gfq2vGnT7UbKdbZxRgXSY8Gpl8-IIhyvhiSht8-kecjSl2odcgsG5TD2yT--WhNoyIbwLbpMBKybNoGwdWsdHKTQLnXMzbRCaIgjBzQ3SgU1W1PspUYSdF7sE10d0oLtVY8Q&lib=MaNxOnVwgQOM3tr6T5bPZndwti6VF2dMb";
-
-    try {
-        const res = await fetch(url);
-        const data = await res.json();
-
-        let html = "";
-
-        data
-        .filter(item => item.Trial === trial && item.Type === "Skema")
-        .forEach(item => {
-
-            html += `
-            <div class="pdf-card">
-
-                <div onclick="openPDF('${item.Link}','')" 
-                     style="flex:1; display:flex; gap:14px; align-items:center;">
-
-                    <div class="pdf-icon">
-                        <span class="material-symbols-rounded">description</span>
-                    </div>
-
-                    <div class="pdf-info">
-                        <div class="pdf-title">${item.Title}</div>
-                        <div class="pdf-author">Skema Jawapan</div>
-                    </div>
-
-                </div>
-
-            </div>
-            `;
-        });
-
-        list.innerHTML = html;
-
-    } catch (err) {
-        list.innerHTML = `<div style="text-align:center;color:red;">Error load Skema</div>`;
     }
 }
 
@@ -344,26 +339,6 @@ function copyLink(slug){
     alert("Link copied!");
 }
 
-let currentTab = "soalan";
-
-function switchTab(tab, el){
-
-    currentTab = tab;
-
-    document.querySelectorAll(".tab").forEach(t=>{
-        t.classList.remove("active");
-    });
-
-    el.classList.add("active");
-
-    if(tab === "soalan"){
-        loadPDF(selectedTrial);
-    }else{
-        loadSkemaPDF(selectedTrial);
-    }
-}
-
-    
 
 </script>
 
