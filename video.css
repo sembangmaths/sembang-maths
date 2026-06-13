@@ -142,3 +142,84 @@ background: transparent;
     border:none;
     border-radius:12px;
 }
+
+.video-item{
+    display:flex;
+    align-items:center;
+    gap:12px;
+
+    background:white;
+    margin:10px;
+    padding:10px;
+
+    border-radius:12px;
+    cursor:pointer;
+
+    animation:wipeUp .5s ease;
+}
+
+.video-item:hover{
+    transform:translateY(-2px);
+}
+
+.video-thumb{
+    width:140px;
+    height:80px;
+    object-fit:cover;
+    border-radius:8px;
+    flex-shrink:0;
+}
+
+.video-info{
+    flex:1;
+}
+
+.video-title{
+    font-size:15px;
+    font-weight:600;
+    color:#222;
+}
+
+.video-modal{
+    position:fixed;
+    inset:0;
+
+    background:rgba(0,0,0,.8);
+
+    display:none;
+    justify-content:center;
+    align-items:center;
+
+    z-index:9999;
+}
+
+.video-modal.show{
+    display:flex;
+}
+
+.video-modal-content{
+    width:95%;
+    max-width:900px;
+    position:relative;
+}
+
+.video-player{
+    width:100%;
+    aspect-ratio:16/9;
+}
+
+.video-player iframe{
+    width:100%;
+    height:100%;
+    border:none;
+    border-radius:12px;
+}
+
+.close-video{
+    position:absolute;
+    top:-40px;
+    right:0;
+    color:white;
+    font-size:28px;
+    cursor:pointer;
+}
