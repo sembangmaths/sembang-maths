@@ -212,13 +212,24 @@ if (v.youtubeIds && Array.isArray(v.youtubeIds)) {
 }
 
   // ✅ kalau masih guna single (lama)
-  else if (v.youtubeId) {
-    html += `
-      <div class="video-wrapper" style="margin-top:10px;">
-        <iframe src="https://www.youtube.com/embed/${v.youtubeId}" allowfullscreen></iframe>
-      </div>
-    `;
-  }
+else if (v.youtubeId) {
+
+  html += `
+    <div class="video-item"
+         onclick="openVideo('${v.youtubeId}')">
+
+        <img class="video-thumb"
+             src="https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg">
+
+        <div class="video-info">
+            <div class="video-title">
+                ${v.title}
+            </div>
+        </div>
+
+    </div>
+  `;
+}
 
   html += `</div>`;
 }
@@ -234,7 +245,7 @@ if (v.youtubeIds && Array.isArray(v.youtubeIds)) {
 
 loadVideos();
 
-window.openVideo = function(id){
+function openVideo(id){
 
   document.getElementById("videoModal")
           .classList.add("show");
@@ -243,7 +254,7 @@ window.openVideo = function(id){
           .src = `https://www.youtube.com/embed/${id}?autoplay=1`;
 }
 
-window.closeVideo = function(){
+function closeVideo(){
 
   document.getElementById("videoModal")
           .classList.remove("show");
@@ -251,6 +262,9 @@ window.closeVideo = function(){
   document.getElementById("videoFrame")
           .src = "";
 }
+
+window.openVideo = openVideo;
+window.closeVideo = closeVideo;
 
 </script>
 
