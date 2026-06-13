@@ -171,71 +171,56 @@ window.loadVideos = async function(){
 
     let html = "";
 
-    querySnapshot.forEach((doc) => {
-      const v = doc.data();
+querySnapshot.forEach((doc) => {
 
-      console.log(v);
+  const v = doc.data();
 
-      if (
-  v.access === "free" ||
-  v.allowedEmails?.includes(window.currentUser?.email)
-) {
-
-  // ❌ kalau tak ada apa-apa video, terus skip
-  if (!v.youtubeIds && !v.youtubeId) return;
-
-  html += `<div style="margin:10px;padding:10px;border-radius:10px;">
-    <h3>${v.title}</h3>`;
-
-  // ✅ kalau ada array (baru)
-if (v.youtubeIds && Array.isArray(v.youtubeIds)) {
-
-  v.youtubeIds.forEach(id => {
+  if (
+    v.access === "free" ||
+    v.allowedEmails?.includes(window.currentUser?.email)
+  ) {
 
     html += `
-      <div class="video-item"
-           onclick="openVideo('${id}')">
-
-          <img class="video-thumb"
-               src="https://img.youtube.com/vi/${id}/mqdefault.jpg">
-
-          <div class="video-info">
-              <div class="video-title">
-                  ${v.titles}
-              </div>
-          </div>
-
-      </div>
+      <div class="chapter-card">
+        <h3>${v.title}</h3>
     `;
-  });
 
-}
+    // cari field array dalam document
+    Object.keys(v).forEach(key => {
 
-  // ✅ kalau masih guna single (lama)
-else if (v.youtubeId) {
+      if (Array.isArray(v[key])) {
 
-  html += `
-    <div class="video-item"
-         onclick="openVideo('${v.youtubeId}')">
+        v[key].forEach(video => {
 
-        <img class="video-thumb"
-             src="https://img.youtube.com/vi/${v.youtubeId}/mqdefault.jpg">
+          html += `
+            <div class="video-item"
+                 onclick="openVideo('${video.youtubeIds}')">
 
-        <div class="video-info">
-            <div class="video-title">
-                ${v.title}
+                <img class="video-thumb"
+                     src="https://img.youtube.com/vi/${video.youtubeIds}/mqdefault.jpg">
+
+                <div class="video-info">
+
+                    <div class="video-title">
+                        ${video.titles}
+                    </div>
+
+                </div>
+
             </div>
-        </div>
+          `;
+        });
 
-    </div>
-  `;
-}
+      }
 
-  html += `</div>`;
-}
     });
 
-    videoContainer.innerHTML = html;
+    html += `</div>`;
+  }
+
+});
+
+videoContainer.innerHTML = html;
 
   } catch (err) {
     console.error(err);
