@@ -161,6 +161,7 @@ background: transparent;
 
 .video-item::after{
     content:"▶";
+    color:#7a1230;
     position:absolute;
     left:55px;
     top:50%;
