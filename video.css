@@ -123,6 +123,131 @@ body{
     animation:wipeIn 1.5s ease;
 }
 
+.video-card{
+    background:#fff;
+    margin:14px 18px;
+    padding:16px;
+    border-radius:14px;
+    animation:wipeUp 1.5s ease;
+
+    display:flex;
+    align-items:center;
+    gap:14px;
+
+    cursor:pointer;
+    transition:.2s ease;
+
+    box-shadow:0 2px 8px rgba(0,0,0,.06);
+}
+
+.video-card:hover{
+    transform:translateY(-2px);
+    box-shadow:0 6px 16px rgba(0,0,0,.10);
+}
+
+.video-icon{
+    width:50px;
+    height:50px;
+    border-radius:12px;
+    background:#f0dde4;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+
+.video-icon .material-symbols-rounded{
+    font-size:28px;
+    color:#7a1230;
+}
+
+.video-info{ flex:1; }
+
+.video-title{
+    font-size:15px;
+    font-weight:600;
+    color:#222;
+    margin-bottom:4px;
+}
+
+.video-author{
+    font-size:13px;
+    color:#777;
+}
+
+.video-arrow .material-symbols-rounded{
+    color:#999;
+    font-size:24px;
+}
+
+/* ================= MODAL PDF ================= */
+#videoModal{
+    position:fixed;
+    inset:0;
+    background:#fff;
+    display:none;
+    z-index:3000;
+    flex-direction:column;
+    overflow:hidden;
+}
+
+#videoHeader{
+    height:50px;
+    background:#7a1230;
+    color:#fff;
+
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:0 18px;
+
+    position:relative;
+    z-index:9999;
+}
+
+#videofFrame{
+    flex:1;
+    width:100%;
+    border:none;
+}
+
+button{
+    background:transparent;
+    border:1px solid #fff;
+    color:#fff;
+    padding:8px 12px;
+    cursor:pointer;
+    font-size:14px;
+    border-radius:5px;
+}
+
+@keyframes pulse {
+    0%{
+        opacity: 0.4;
+        transform: scale(1);
+    }
+    50%{
+        opacity: 1;
+        transform: scale(1.01);
+    }
+    100%{
+        opacity: 0.4;
+        transform: scale(1);
+    }
+}
+
+.loading{
+    animation: pulse 2s infinite ease-in-out;
+    font-weight: 200;
+    font-size: 15px;
+}
+
+/* ================= FIX Z-INDEX ================= */
+#app{ position:relative; z-index:1; }
+.card{ position:relative; z-index:1; }
+.sidebar{ z-index:1001; }
+#pdfModal{ z-index:3000; }
+
 /* ================= FIX Z-INDEX ================= */
 #app{ position:relative; z-index:1; }
 .card{ position:relative; z-index:1; }
@@ -143,95 +268,46 @@ background: transparent;
     border-radius:12px;
 }
 
-.video-item{
+.tabs{
     display:flex;
-    align-items:center;
-    gap:12px;
     position:relative;
-
-    background:white;
-    margin:10px;
-    padding:10px;
-
-    border-radius:12px;
-    cursor:pointer;
-
-    animation:wipeUp .5s ease;
+    margin-left:20px;
+    padding:4px;
+    background:#f0dde4;
+    border-radius:999px;
+    width:fit-content;
+    overflow:hidden;
+    animation:wipeIn 1.5s ease;
 }
 
-.video-item::after{
-    content:"▶";
-    color:white;
+/* SLIDER (AUTO WIDTH, NO DUPLICATE LOOK) */
+.tab-slider{
     position:absolute;
-    left:55px;
-    top:50%;
-    transform:translateY(-50%);
-    font-size:28px;
-    text-shadow:0 0 8px rgba(0,0,0,.8);
+    top:4px;
+    left:4px;
+    height:calc(100% - 8px);
+    width:calc(50% - 4px);
+    background:#7a1230;
+    border-radius:999px;
+    transition:0.15s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index:0;
 }
 
-.video-item:hover{
-    transform:translateY(-2px);
-}
-
-.video-thumb{
-    width:140px;
-    height:80px;
-    object-fit:cover;
-    border-radius:8px;
-    flex-shrink:0;
-}
-
-.video-info{
+/* TAB BUTTON */
+.tab{
+    position:relative;
+    z-index:1;
     flex:1;
-}
-
-.video-title{
-    font-size:15px;
-    font-weight:600;
-    color:#222;
-}
-
-.video-modal{
-    position:fixed;
-    inset:0;
-
-    background:rgba(0,0,0,.8);
-
-    display:none;
-    justify-content:center;
-    align-items:center;
-
-    z-index:9999;
-}
-
-.video-modal.show{
-    display:flex;
-}
-
-.video-modal-content{
-    width:95%;
-    max-width:900px;
-    position:relative;
-}
-
-.video-player{
-    width:100%;
-    aspect-ratio:16/9;
-}
-
-.video-player iframe{
-    width:100%;
-    height:100%;
-    border:none;
-    border-radius:12px;
-}
-
-.close-video{
-    position:absolute;
-    top:-40px;
-    right:0;
-    color:white;
-    font-size:28px;
+    padding:8px 22px;
     cursor:pointer;
+    font-size:14px;
+    font-weight:500;
+    text-align:center;
+    color:#4c4b4b;
+    transition:0.2s ease;
+    white-space:nowrap;
+}
+
+.tab.active{
+    color:#fff;
 }
