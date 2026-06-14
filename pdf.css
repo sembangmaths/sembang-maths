@@ -145,6 +145,7 @@ body{
     box-shadow:0 6px 16px rgba(0,0,0,.10);
 }
 
+
 .pdf-icon{
     width:50px;
     height:50px;
@@ -161,7 +162,7 @@ body{
     color:#7a1230;
 }
 
-.pdf-info{ flex:1; }
+.pdf-info{ flex:1;}
 
 .pdf-title{
     font-size:15px;
