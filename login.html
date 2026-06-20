@@ -34,13 +34,20 @@
 
     <button onclick="login()">LOGIN</button>
 
-    <div class="small-text">Forgot your password?</div>
+    <div class="small-text">
+    <span class="link" onclick="resetPassword()">
+        Forgot your password?
+    </span>
+</div>
 
     <div class="divider">or</div>
 
-    <div class="small-text">
-        Not yet registered? <span class="link">Sign up</span>
-    </div>
+<div class="small-text">
+    Not yet registered? 
+    <span class="link" onclick="window.location.href='signup.html'">
+        Sign up
+    </span>
+</div>
 
     <div class="small-text" style="margin-top:14px;">
         By using this application, you agree to the Terms of use and Privacy policy
@@ -48,16 +55,21 @@
 
 </div>
 
-<script>
-function login(){
-    localStorage.setItem("loggedIn", "true");
-    window.location.href = "index.html";
-}
-</script>
 
 <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  sendPasswordResetEmail
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+getFirestore,
+doc,
+updateDoc
+} from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
@@ -71,20 +83,82 @@ const firebaseConfig = {
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
 
-  window.login = function () {
-    const email = document.querySelectorAll("input")[0].value;
-    const password = document.querySelectorAll("input")[1].value;
+const auth = getAuth(app);
 
-    signInWithEmailAndPassword(auth, email, password)
-      .then((userCredential) => {
-        window.location.href = "index.html";
-      })
-      .catch((error) => {
-        alert("Login gagal: " + error.message);
-      });
-  }
+const db = getFirestore(app);
+
+window.login = function () {
+
+
+const email = document.querySelectorAll("input")[0].value;
+
+const password = document.querySelectorAll("input")[1].value;
+
+
+
+signInWithEmailAndPassword(auth,email,password)
+
+.then(async (userCredential)=>{
+
+
+const user = userCredential.user;
+
+
+
+await updateDoc(
+
+doc(db,"users",user.uid),
+
+{
+
+lastLogin:new Date()
+
+}
+
+);
+
+
+
+window.location.href="index.html";
+
+
+
+})
+
+
+.catch((error)=>{
+
+
+alert("Login gagal: "+error.message);
+
+
+});
+
+
+}
+
+window.resetPassword = function () {
+
+    const email = prompt("Enter your registered email address:");
+
+    if (!email) {
+        return;
+    }
+
+    sendPasswordResetEmail(auth, email)
+    .then(() => {
+
+        alert("A password reset link has been sent to your email.\n\nIf you don't see it, please check your Spam or Junk folder.");
+
+    })
+    .catch((error) => {
+
+        alert("Failed to send reset email: " + error.message);
+
+    });
+
+}
 </script>
 </body>
 </html>
