@@ -114,6 +114,7 @@ body{
     align-items:center;
     gap:12px;
     border-bottom:1px solid #ddd;
+    z-index:1000;
     
 }
 
