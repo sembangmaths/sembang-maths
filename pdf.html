@@ -16,9 +16,12 @@
 
 <div class="sidebar" id="sidebar">
 
-    <div class="sidebar-profile" onclick="window.location.href='login.html'">
-    <span class="material-symbols-rounded">person</span>
+    <div class="sidebar-profile" onclick="checkProfile()">
+    <span class="material-symbols-rounded" id="profileIcon">
+        person
+    </span>
 </div>
+    
 
 <div class="menu-item" onclick="setActive(this); window.location.href='index.html'">
     <span class="material-symbols-rounded">home</span>
@@ -285,9 +288,9 @@ async function loadPDF(trial){
 
     // 🔥 show loading dulu
 list.innerHTML = `
-    <div class="loading"
-         style="text-align:center; padding:15px; color:#777;">
-        Loading...
+    <div class="loading-screen">
+        <div class="spinner"></div>
+        <div>Loading...</div>
     </div>
 `;
 
@@ -479,6 +482,94 @@ window.location.pathname +
     alert("Link copied!");
 }
 
+</script>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+import { 
+getAuth,
+onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+
+const firebaseConfig = {
+
+  apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+  authDomain: "sembang-maths.firebaseapp.com",
+  projectId: "sembang-maths",
+  storageBucket: "sembang-maths.firebasestorage.app",
+  messagingSenderId: "949561490562",
+  appId: "1:949561490562:web:0adfde880f6de95c03489b"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+// CHECK LOGIN STATUS
+
+window.userLogged = false;
+
+
+onAuthStateChanged(auth, (user)=>{
+
+
+    if(user){
+
+        console.log("User login:", user.email);
+
+        window.userLogged = true;
+
+
+        document.getElementById("profileIcon").textContent =
+        "account_circle";
+
+
+    }else{
+
+
+        console.log("Belum login");
+
+        window.userLogged = false;
+
+
+        document.getElementById("profileIcon").textContent =
+        "person";
+
+
+    }
+
+
+});
+
+
+
+
+// PROFILE BUTTON
+
+window.checkProfile = function(){
+
+
+    if(window.userLogged){
+
+
+        window.location.href="profile.html";
+
+
+    }else{
+
+
+        window.location.href="login.html";
+
+
+    }
+
+
+}
 
 </script>
 
