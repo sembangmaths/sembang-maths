@@ -110,9 +110,9 @@ body{
     height:60px;
     display:flex;
     align-items:center;
-    gap:12px;
     border-bottom:1px solid #ddd;
     z-index:900;
+padding-top:env(safe-area-inset-top);
     
 }
 
