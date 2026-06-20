@@ -168,8 +168,8 @@ body{
 /* ================= FIX Z-INDEX ================= */
 #app{ position:relative; z-index:1; }
 .card{ position:relative; z-index:1; }
-.sidebar{ z-index:1001; }
-
+.sidebar{ z-index:1001;}
+.header{z-index:900;}
 /* HERO */
 
 .hero-card{
