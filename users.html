@@ -1,0 +1,1053 @@
+    <!DOCTYPE html>
+    <html lang="ms">
+
+    <head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Sembang Maths Control Center</title>
+
+
+    <style>
+
+    *{
+    box-sizing:border-box;
+    font-family:Arial,sans-serif;
+    }
+
+
+    body{
+
+    margin:0;
+    background:#f5eee4;
+    padding:30px;
+
+    }
+
+
+.user-header{
+
+cursor:pointer;
+display:flex;
+align-items:center;
+gap:8px;
+
+}
+
+.email-text{
+
+color:#555;
+font-size:14px;
+
+}
+
+.arrow{
+
+font-size:18px;
+margin-left:5px;
+
+}
+
+
+    .user-details{
+
+    display:none;
+
+    margin-top:15px;
+
+    }
+
+
+    .user-card.active .user-details{
+
+    display:block;
+
+    }
+
+
+    .arrow{
+
+    float:right;
+    font-size:18px;
+
+    }
+
+
+    .container{
+
+    max-width:1000px;
+    margin:auto;
+
+    }
+
+
+    h1{
+
+    text-align:center;
+    color:#333;
+
+    }
+
+
+
+    .top-bar{
+
+    display:flex;
+    gap:15px;
+    margin-bottom:25px;
+
+    }
+
+
+
+    input,select{
+
+    padding:12px;
+    border-radius:10px;
+    border:1px solid #ddd;
+    font-size:14px;
+
+    }
+
+
+    input{
+
+    flex:1;
+
+    }
+
+
+
+    .user-card{
+
+    background:white;
+    padding:20px;
+    border-radius:18px;
+    margin-bottom:15px;
+
+    box-shadow:0 5px 15px rgba(0,0,0,.08);
+
+    }
+
+
+
+    .name{
+
+    font-size:20px;
+    font-weight:bold;
+
+    }
+
+
+    .info{
+
+    margin-top:8px;
+    color:#555;
+    font-size:14px;
+
+    }
+
+
+    .package{
+
+    margin-top:12px;
+    background:#f3e7da;
+    display:inline-block;
+    padding:6px 12px;
+    border-radius:20px;
+
+    }
+
+
+
+    .uid{
+
+    font-size:12px;
+    color:#999;
+    word-break:break-all;
+
+    }
+
+    .access-list{
+
+    display:flex;
+    flex-wrap:wrap;
+    gap:8px;
+    margin-top:12px;
+
+    }
+
+
+    .access-tag{
+
+    background:#e8f0ff;
+    padding:6px 12px;
+    border-radius:20px;
+    font-size:13px;
+
+    }
+
+
+
+    </style>
+
+    </head>
+
+
+    <body>
+
+
+    <div class="container">
+
+
+    <h1>
+    Sembang Maths Control Center
+    </h1>
+
+
+    <div class="top-bar">
+
+
+    <input 
+    type="text"
+    id="searchBox"
+    placeholder="Search name or email..."
+    >
+
+
+    <select id="sortSelect">
+
+    <option value="signup">
+    Recent Signup
+    </option>
+
+
+    <option value="login">
+    Recent Login
+    </option>
+
+
+    <option value="name">
+    Name A-Z
+    </option>
+
+
+    </select>
+
+
+    </div>
+
+
+
+    <div id="userList">
+
+    Loading users...
+
+    </div>
+
+
+    </div>
+
+
+
+
+
+    <script type="module">
+
+
+    import { initializeApp } 
+    from
+    "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+
+    import {
+    getFirestore,
+    collection,
+    getDocs,
+    doc,
+    updateDoc,
+    getDoc
+    }
+    from
+    "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+
+    const firebaseConfig = {
+
+    apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+
+    authDomain: "sembang-maths.firebaseapp.com",
+
+    projectId: "sembang-maths",
+
+    storageBucket: "sembang-maths.firebasestorage.app",
+
+    messagingSenderId: "949561490562",
+
+    appId: "1:949561490562:web:0adfde880f6de95c03489b"
+
+    };
+
+
+
+    const app = initializeApp(firebaseConfig);
+
+    const db = getFirestore(app);
+
+
+
+    let users=[];
+
+const chapters={
+
+
+form4_chapter1_functions:"Fungsi / Functions",
+
+form4_chapter2_quadratic_functions:"Fungsi Kuadratik / Quadratic Functions",
+
+form4_chapter3_systems_of_equations:"Sistem Persamaan / Systems of Equations",
+
+form4_chapter4_indices_surds_logarithms:"Indeks, Surd dan Logaritma / Indices, Surds and Logarithms",
+
+form4_chapter5_progressions:"Janjang / Progressions",
+
+form4_chapter6_linear_law:"Hukum Linear / Linear Law",
+
+form4_chapter7_coordinate_geometry:"Geometri Koordinat / Coordinate Geometry",
+
+form4_chapter8_vectors:"Vektor / Vectors",
+
+form4_chapter9_solutions_of_triangles:"Penyelesaian Segi Tiga / Solutions of Triangles",
+
+
+
+form5_chapter1_circular_measure:"Sukatan Membulat / Circular Measure",
+
+form5_chapter2_differentiation:"Pembezaan / Differentiation",
+
+form5_chapter3_integration:"Pengamiran / Integration",
+
+form5_chapter4_permutation_combination:"Pilih Atur dan Gabungan / Permutation and Combination",
+
+form5_chapter5_probability_distribution:"Taburan Kebarangkalian / Probability Distribution",
+
+form5_chapter6_trigonometric_functions:"Fungsi Trigonometri / Trigonometric Functions",
+
+form5_chapter7_linear_programming:"Pengaturcaraan Linear / Linear Programming",
+
+form5_chapter8_kinematics:"Kinematik Gerakan Linear / Kinematics of Linear Motion"
+
+};
+
+
+
+
+
+    async function loadUsers(){
+
+
+    const querySnapshot = await getDocs(
+    collection(db,"users")
+    );
+
+
+
+    users=[];
+
+
+    querySnapshot.forEach((doc)=>{
+
+
+    users.push({
+
+    id:doc.id,
+
+    ...doc.data()
+
+    });
+
+
+    });
+
+
+    displayUsers(users);
+
+
+    }
+
+
+
+    function displayUsers(data){
+
+
+    const list=document.getElementById("userList");
+
+
+    list.innerHTML="";
+
+
+
+    if(data.length===0){
+
+    list.innerHTML="Tiada user dijumpai";
+
+    return;
+
+    }
+
+
+
+    data.forEach(user=>{
+
+
+    list.innerHTML += `
+
+
+    <div class="user-card">
+
+
+    <div class="user-header" onclick="toggleUser(this)">
+
+
+    <div class="name">
+
+    ${user.name || "No Name"}
+
+    </div>
+
+
+    <div class="info">
+
+    ${user.email || "-"}
+
+    </div>
+
+
+    <span class="arrow">
+    ▼
+    </span>
+
+
+    </div>
+
+
+
+    <div class="user-details">
+
+
+    <div class="info">
+
+    UID:
+    <div class="uid">
+    ${user.uid || user.id}
+    </div>
+
+    </div>
+
+
+
+    <div class="info">
+
+    Signup:
+
+    ${formatDate(user.signupDate)}
+
+    </div>
+
+
+
+    <div class="info">
+
+    Last Login:
+
+    ${formatDate(user.lastLogin)}
+
+    </div>
+
+
+
+    <div class="package">
+
+    ${getPackageName(user)}
+
+    </div>
+
+
+
+    <div class="info">
+
+    Access:
+
+    </div>
+
+
+    <div class="access-list">
+
+    ${displayAccess(user)}
+
+    </div>
+
+
+    <br>
+
+
+    <button onclick="manageAccess('${user.id}')">
+    Manage Access
+    </button>
+
+
+    </div>
+
+
+    </div>
+    `;
+
+
+    });
+
+
+    }
+
+function getPackageName(user){
+
+
+const access=user.access || {};
+
+
+const form4=[
+
+"form4_chapter1_functions",
+
+"form4_chapter2_quadratic_functions",
+
+"form4_chapter3_systems_of_equations",
+
+"form4_chapter4_indices_surds_logarithms",
+
+"form4_chapter5_progressions",
+
+"form4_chapter6_linear_law",
+
+"form4_chapter7_coordinate_geometry",
+
+"form4_chapter8_vectors",
+
+"form4_chapter9_solutions_of_triangles",
+
+];
+
+
+const form5=[
+
+"form5_chapter1_circular_measure",
+
+"form5_chapter2_differentiation",
+
+"form5_chapter3_integration",
+
+"form5_chapter4_permutation_combination",
+
+"form5_chapter5_probability_distribution",
+
+"form5_chapter6_trigonometric_functions",
+
+"form5_chapter7_linear_programming",
+
+"form5_chapter8_kinematics"
+
+];
+
+
+const all=[
+...form4,
+...form5
+];
+
+
+if(all.every(chapter=>access[chapter]===true))
+
+return "Full Access";
+
+
+if(form4.every(chapter=>access[chapter]===true))
+
+return "Form 4 Complete";
+
+
+if(form5.every(chapter=>access[chapter]===true))
+
+return "Form 5 Complete";
+
+
+const count=all.filter(
+chapter=>access[chapter]===true
+).length;
+
+
+if(count>0)
+
+return "Custom Access";
+
+
+return "No Package";
+
+
+}
+
+    function displayAccess(user){
+
+
+    const access=user.access || {};
+
+
+    let html="";
+
+
+    for(let key in access){
+
+
+    if(access[key]){
+
+
+    html += `
+
+    <div class="access-tag">
+
+    ${chapters[key]}
+
+    </div>
+
+    `;
+
+    }
+
+
+    }
+
+
+    if(html===""){
+
+    html=`
+
+    <div class="access-tag">
+
+    No Access
+
+    </div>
+
+    `;
+
+    }
+
+
+    return html;
+
+
+    }
+
+
+
+    function formatDate(date){
+
+
+    if(!date)
+    return "-";
+
+
+    if(date.seconds){
+
+    return new Date(
+    date.seconds*1000
+    ).toLocaleString();
+
+    }
+
+
+    return new Date(date)
+    .toLocaleString();
+
+
+    }
+
+
+
+
+
+    document
+    .getElementById("searchBox")
+    .addEventListener("input",(e)=>{
+
+
+    const value=e.target.value.toLowerCase();
+
+
+    const filtered=users.filter(user=>{
+
+
+    return (
+
+    (user.name||"")
+    .toLowerCase()
+    .includes(value)
+
+    ||
+
+    (user.email||"")
+    .toLowerCase()
+    .includes(value)
+
+    );
+
+
+    });
+
+
+    displayUsers(filtered);
+
+
+    });
+
+
+
+
+
+
+
+    document
+    .getElementById("sortSelect")
+    .addEventListener("change",(e)=>{
+
+
+    let sorted=[...users];
+
+
+    if(e.target.value==="signup"){
+
+
+    sorted.sort((a,b)=>
+
+    new Date(b.signupDate?.seconds*1000 || b.signupDate)
+
+    -
+
+    new Date(a.signupDate?.seconds*1000 || a.signupDate)
+
+    );
+
+
+    }
+
+
+
+    if(e.target.value==="login"){
+
+
+    sorted.sort((a,b)=>
+
+    new Date(b.lastLogin?.seconds*1000 || b.lastLogin)
+
+    -
+
+    new Date(a.lastLogin?.seconds*1000 || a.lastLogin)
+
+    );
+
+
+    }
+
+
+
+    if(e.target.value==="name"){
+
+
+    sorted.sort((a,b)=>
+
+    (a.name||"")
+    .localeCompare(b.name||"")
+
+    );
+
+
+    }
+
+
+    displayUsers(sorted);
+
+
+    });
+
+
+
+
+
+    let currentUser="";
+
+
+
+    window.manageAccess = function(uid){
+
+
+    currentUser=uid;
+
+
+    const user=users.find(
+    u=>u.id===uid
+    );
+
+
+    let access=user.access || {};
+
+
+
+    let html="";
+
+
+    for(let key in chapters){
+
+
+    html+=`
+
+    <div style="margin:10px 0">
+
+    <label>
+
+    <input 
+    type="checkbox"
+    class="accessBox"
+    data-key="${key}"
+    ${access[key] ? "checked" : ""}
+    >
+
+    ${chapters[key]}
+
+    </label>
+
+    </div>
+
+    `;
+    }
+
+    document.getElementById("chapterList").innerHTML=html;
+    document.getElementById("accessModal").style.display="block";
+    }
+
+
+    window.closeAccess=function(){
+    document.getElementById("accessModal").style.display="none";
+    }
+
+    window.selectForm4=function(){
+
+
+document
+.querySelectorAll(".accessBox")
+.forEach(box=>{
+
+
+if(box.dataset.key.startsWith("form4_")){
+
+box.checked=true;
+
+}
+
+
+});
+
+
+}
+
+
+
+window.selectForm5=function(){
+
+
+document
+.querySelectorAll(".accessBox")
+.forEach(box=>{
+
+
+if(box.dataset.key.startsWith("form5_")){
+
+box.checked=true;
+
+}
+
+
+});
+
+
+}
+
+
+
+window.selectAllChapters=function(){
+
+
+document
+.querySelectorAll(".accessBox")
+.forEach(box=>{
+
+
+box.checked=true;
+
+
+});
+
+
+}
+
+    window.saveAccess=async function(){
+
+    let access={};
+
+    document
+    .querySelectorAll(".accessBox")
+    .forEach(box=>{
+
+    access[box.dataset.key]=box.checked;
+
+    });
+
+    await updateDoc(
+
+    doc(db,"users",currentUser),
+    {
+    access:access
+    }
+    );
+
+
+    alert("Access berjaya dikemaskini");
+
+    document.getElementById("accessModal").style.display="none";
+
+    loadUsers();
+
+    }
+
+    window.toggleUser=function(element){
+
+
+    const currentCard=
+    element.parentElement;
+
+
+
+    document
+    .querySelectorAll(".user-card")
+    .forEach(card=>{
+
+
+    if(card!==currentCard){
+
+    card.classList.remove("active");
+
+
+    const arrow=
+    card.querySelector(".arrow");
+
+
+    if(arrow)
+    arrow.innerHTML="▼";
+
+
+    }
+
+
+    });
+
+
+
+    currentCard.classList.toggle("active");
+
+
+
+    const arrow=
+    currentCard.querySelector(".arrow");
+
+
+    if(currentCard.classList.contains("active")){
+
+    arrow.innerHTML="▲";
+
+    }
+    else{
+
+    arrow.innerHTML="▼";
+
+    }
+
+
+    }
+
+
+    loadUsers();
+
+
+    </script>
+
+
+    <div id="accessModal"
+    style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:#0008;
+    ">
+
+    <div style="
+    background:white;
+    width:90%;
+    max-width:500px;
+    margin:50px auto;
+    padding:25px;
+    border-radius:20px;
+    ">
+
+<h2>Edit Access</h2>
+
+
+<button onclick="selectForm4()">
+All Chapters Form 4
+</button>
+
+
+<button onclick="selectForm5()">
+All Chapters Form 5
+</button>
+
+
+<button onclick="selectAllChapters()">
+Combo All Chapters
+</button>
+
+
+<br><br>
+
+
+<div id="chapterList"></div>
+
+
+    <button onclick="saveAccess()">
+    SAVE
+    </button>
+
+
+    <button onclick="closeAccess()">
+    Cancel
+    </button>
+
+
+    </div>
+
+    </div>
+
+
+    </body>
+
+    </html>

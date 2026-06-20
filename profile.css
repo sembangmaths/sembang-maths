@@ -1,0 +1,190 @@
+*{
+    box-sizing:border-box;
+}
+
+
+body{
+
+    margin:0;
+    background:#f5eee4;
+    font-family:system-ui, -apple-system, Segoe UI, Roboto, Arial;
+
+    min-height:100vh;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+}
+
+
+/* TOP CLOSE BUTTON */
+
+.top-bar{
+
+    position:absolute;
+
+    top:22px;
+    right:22px;
+
+}
+
+
+.top-bar span{
+
+    font-size:28px;
+
+    color:#7a1230;
+
+    cursor:pointer;
+
+    transition:.2s;
+
+}
+
+
+.top-bar span:hover{
+
+    opacity:.7;
+
+}
+
+
+
+/* PROFILE CARD */
+
+.profile-card{
+
+    width:330px;
+
+    background:#fffaf5;
+
+    padding:35px 25px;
+
+    border-radius:24px;
+
+    text-align:center;
+
+    box-shadow:
+    0 8px 30px rgba(122,18,48,.12);
+
+}
+
+
+
+/* PROFILE ICON */
+
+.profile-icon{
+
+    width:90px;
+    height:90px;
+
+    display:flex;
+    justify-content:center;
+    align-items:center;
+
+    margin:auto;
+
+    border-radius:50%;
+
+    background:#7a1230;
+
+    color:white;
+
+    font-size:55px;
+
+}
+
+
+
+/* NAME */
+
+.profile-card h2{
+
+    margin:20px 0 6px;
+
+    color:#7a1230;
+
+    font-size:24px;
+
+    font-weight:500;
+
+}
+
+
+
+/* EMAIL */
+
+.profile-card p{
+
+    margin:0;
+
+    color:#8b7b72;
+
+    font-size:14px;
+
+}
+
+
+
+/* BUTTON */
+
+.profile-btn{
+
+    width:100%;
+
+    padding:14px;
+
+    margin-top:18px;
+
+    border:none;
+
+    border-radius:14px;
+
+    font-size:15px;
+
+    font-weight:500;
+
+    cursor:pointer;
+
+    transition:.25s;
+
+}
+
+
+
+/* PRIMARY BUTTON */
+
+.profile-btn:not(.logout-btn){
+
+    background:#7a1230;
+
+    color:white;
+
+}
+
+
+.profile-btn:not(.logout-btn):hover{
+
+    background:#641027;
+
+}
+
+
+
+/* LOGOUT */
+
+.logout-btn{
+
+    background:#f2e5dd;
+
+    color:#7a1230;
+
+}
+
+
+.logout-btn:hover{
+
+    background:#ead5ca;
+
+}

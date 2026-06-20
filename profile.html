@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="ms">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Profile - Sembang Maths</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+<link rel="stylesheet" href="profile.css">
+
+</head>
+
+
+<body>
+
+<div class="top-bar">
+
+    <div></div>
+
+    <div 
+      style="margin-left:auto;cursor:pointer;color:#7a1230;"
+      onclick="window.location.href='index.html'">
+      
+      <span class="material-symbols-rounded">
+        close
+      </span>
+
+    </div>
+
+</div>
+
+
+<div class="profile-card">
+
+<span class="material-symbols-rounded profile-icon">
+    account_circle
+</span>
+
+
+<h2 id="userName">
+    Loading...
+</h2>
+
+
+<p id="userEmail">
+    Loading...
+</p>
+
+
+<button class="profile-btn" onclick="changeName()">
+    Change Name
+</button>
+
+
+<button class="profile-btn" onclick="changePassword()">
+    Reset Password
+</button>
+
+
+<button class="profile-btn logout-btn" onclick="logout()">
+    Logout
+</button>
+
+
+</div>
+
+
+
+
+<script type="module">
+
+
+import { initializeApp } from 
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+
+import {
+
+getAuth,
+onAuthStateChanged,
+signOut,
+updateProfile,
+sendPasswordResetEmail
+
+} from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import {
+
+getFirestore,
+doc,
+updateDoc
+
+} from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+authDomain: "sembang-maths.firebaseapp.com",
+projectId: "sembang-maths",
+storageBucket: "sembang-maths.firebasestorage.app",
+messagingSenderId: "949561490562",
+appId: "1:949561490562:web:0adfde880f6de95c03489b"
+
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth = getAuth(app);
+
+const db = getFirestore(app);
+
+
+onAuthStateChanged(auth,(user)=>{
+
+
+    if(user){
+
+
+        // PAPAR NAMA USER
+
+        document.getElementById("userName").textContent =
+        user.displayName;
+
+
+        // PAPAR EMAIL
+
+        document.getElementById("userEmail").textContent =
+        user.email;
+
+
+
+    }else{
+
+
+        // JIKA BELUM LOGIN
+
+        window.location.href="login.html";
+
+
+    }
+
+
+});
+
+
+
+
+
+window.logout = function(){
+
+    const confirmLogout = confirm("Are you sure you want to log out from Sembang Maths?");
+
+    if(confirmLogout){
+
+        signOut(auth)
+        .then(()=>{
+
+            alert("You have been logged out successfully.");
+
+            setTimeout(()=>{
+
+                window.location.href="login.html";
+
+            },1000);
+
+        });
+
+    }
+
+}
+
+window.changeName = async function(){
+
+    const newName = prompt("Enter your new name:");
+
+    if(!newName) return;
+
+
+    const user = auth.currentUser;
+
+
+    try{
+
+
+        // update Firebase Authentication
+
+        await updateProfile(user,{
+            displayName:newName
+        });
+
+
+
+        // update Firestore
+
+        await updateDoc(
+            doc(db,"users",user.uid),
+            {
+                name:newName
+            }
+        );
+
+
+
+        document.getElementById("userName").textContent = newName;
+
+
+        alert("Name updated successfully.");
+
+
+    }catch(error){
+
+
+        alert("Failed to update name: " + error.message);
+
+
+    }
+
+}
+
+window.changePassword = async function(){
+
+    const user = auth.currentUser;
+
+    try{
+
+        await sendPasswordResetEmail(auth,user.email);
+
+        alert(
+            "A password reset link has been sent to your email.\n\nPlease check your inbox. If you cannot find the email, check your Spam or Junk folder."
+        );
+
+    }catch(error){
+
+        alert("Failed to send reset email: " + error.message);
+
+    }
+
+}
+
+
+
+</script>
+
+
+</body>
+
+</html>
