@@ -257,11 +257,6 @@ button{
     }
 }
 
-.loading{
-    animation: pulse 2s infinite ease-in-out;
-    font-weight: 200;
-    font-size: 15px;
-}
 
 /* ================= FIX Z-INDEX ================= */
 #app{ position:relative; z-index:1; }
