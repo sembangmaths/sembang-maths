@@ -11,13 +11,26 @@
 
 <body>
 
+<div id="loadingScreen">
+
+    <div class="loader"></div>
+
+    <p>
+        Loading...
+    </p>
+
+</div>
+
 <div class="overlay" onclick="closeSidebar()" id="overlay"></div>
 
 <div class="sidebar" id="sidebar">
 
-  <div class="sidebar-profile" onclick="window.location.href='login.html'">
-    <span class="material-symbols-rounded">person</span>
-  </div>
+  <div class="sidebar-profile" onclick="checkProfile()">
+    <span class="material-symbols-rounded" id="profileIcon">
+        person
+    </span>
+</div>
+  
 
   <div class="menu-item" onclick="setActive(this); window.location.href='index.html'">
     <span class="material-symbols-rounded">home</span>
@@ -67,39 +80,157 @@ function toggleSidebar(){
 
 /* ================= CHAPTER DATA ================= */
 const chapters = {
-  form4: [
-    { name: "Form 4 Chapter 1: Functions", label: "Fungsi / <i>Functions</i>" },
-    { name: "Form 4 Chapter 2: Quadratic Functions", label: "Fungsi Kuadratik / <i>Quadratic Functions</i>" },
-    { name: "Form 4 Chapter 3: System of Equations", label: "Sistem Persamaan / <i>Systems of Equations</i>" },
-    { name: "Form 4 Chapter 4: Indices, Surd and Logarithms", label: "Indeks, Surd dan Logaritma / <i>Indices, Surds and Logarithms</i>" },
-    { name: "Form 4 Chapter 5: Progressions", label: "Janjang / <i>Progressions</i>" },
-    { name: "Form 4 Chapter 6: Linear Law", label: "Hukum Linear / <i>Linear Law</i>" },
-    { name: "Form 4 Chapter 7: Coordinate Geometry", label: "Geometri Koordinat / <i>Coordinate Geometry</i>" },
-    { name: "Form 4 Chapter 8: Vectors", label: "Vektor / <i>Vectors</i>" },
-    { name: "Form 4 Chapter 9: Solutions of Triangles", label: "Penyelesaian Segi Tiga / <i>Solutions of Triangles</i>" },
-    { name: "Form 4 Chapter 10: Index Numbers", label: "Nombor Indeks / <i>Index Number</i>" }
-  ],
 
-  form5: [
-    { name: "Form 5 Chapter 1: Circular Measure", label: "Sukatan Membulat / <i>Circular Measure</i>" },
-    { name: "Form 5 Chapter 2: Differentiation", label: "Pembezaan / <i>Differentiation</i>" },
-    { name: "Form 5 Chapter 3: Integration", label: "Pengamiran / <i>Integration</i>" },
-    { name: "Form 5 Chapter 4: Permutation and Combination", label: "Pilih Atur dan Gabungan / <i>Permutation and Combination</i>" },
-    { name: "Form 5 Chapter 5: Probability Distribution", label: "Taburan Kebarangkalian / <i>Probability Distribution</i>" },
-    { name: "Form 5 Chapter 6: Trigonometric Functions", label: "Fungsi Trigonometri / <i>Trigonometric Functions</i>" },
-    { name: "Form 5 Chapter 7: Linear Programming", label: "Pengaturcaraan Linear / <i>Linear Programming</i>" },
-    { name: "Form 5 Chapter 8: Kinematics", label: "Kinematik Gerakan Linear / <i>Kinematics of Linear Motion</i>" }
-  ]
+
+form4:[
+
+{
+key:"form4_chapter1_functions",
+name:"Form 4 Chapter 1: Functions",
+label:"Fungsi / <i>Functions</i>"
+},
+
+
+{
+key:"form4_chapter2_quadratic_functions",
+name:"Form 4 Chapter 2: Quadratic Functions",
+label:"Fungsi Kuadratik / <i>Quadratic Functions</i>"
+},
+
+
+{
+key:"form4_chapter3_systems_of_equations",
+name:"Form 4 Chapter 3: Systems of Equations",
+label:"Sistem Persamaan / <i>Systems of Equations</i>"
+},
+
+
+{
+key:"form4_chapter4_indices_surds_logarithms",
+name:"Form 4 Chapter 4: Indices, Surds and Logarithms",
+label:"Indeks, Surd dan Logaritma / <i>Indices, Surds and Logarithms</i>"
+},
+
+
+{
+key:"form4_chapter5_progressions",
+name:"Form 4 Chapter 5: Progressions",
+label:"Janjang / <i>Progressions</i>"
+},
+
+
+{
+key:"form4_chapter6_linear_law",
+name:"Form 4 Chapter 6: Linear Law",
+label:"Hukum Linear / <i>Linear Law</i>"
+},
+
+
+{
+key:"form4_chapter7_coordinate_geometry",
+name:"Form 4 Chapter 7: Coordinate Geometry",
+label:"Geometri Koordinat / <i>Coordinate Geometry</i>"
+},
+
+
+{
+key:"form4_chapter8_vectors",
+name:"Form 4 Chapter 8: Vectors",
+label:"Vektor / <i>Vectors</i>"
+},
+
+
+{
+key:"form4_chapter9_solutions_of_triangles",
+name:"Form 4 Chapter 9: Solutions of Triangles",
+label:"Penyelesaian Segi Tiga / <i>Solutions of Triangles</i>"
+},
+
+
+{
+key:"form4_chapter10_index_number",
+name:"Form 4 Chapter 10: Index Number",
+label:"Nombor Indeks / <i>Index Number</i>"
+}
+
+
+],
+
+
+
+
+
+form5:[
+
+
+{
+key:"form5_chapter1_circular_measure",
+name:"Form 5 Chapter 1: Circular Measure",
+label:"Sukatan Membulat / <i>Circular Measure</i>"
+},
+
+
+{
+key:"form5_chapter2_differentiation",
+name:"Form 5 Chapter 2: Differentiation",
+label:"Pembezaan / <i>Differentiation</i>"
+},
+
+
+{
+key:"form5_chapter3_integration",
+name:"Form 5 Chapter 3: Integration",
+label:"Pengamiran / <i>Integration</i>"
+},
+
+
+{
+key:"form5_chapter4_permutation_combination",
+name:"Form 5 Chapter 4: Permutation and Combination",
+label:"Pilih Atur dan Gabungan / <i>Permutation and Combination</i>"
+},
+
+
+{
+key:"form5_chapter5_probability_distribution",
+name:"Form 5 Chapter 5: Probability Distribution",
+label:"Taburan Kebarangkalian / <i>Probability Distribution</i>"
+},
+
+
+{
+key:"form5_chapter6_trigonometric_functions",
+name:"Form 5 Chapter 6: Trigonometric Functions",
+label:"Fungsi Trigonometri / <i>Trigonometric Functions</i>"
+},
+
+
+{
+key:"form5_chapter7_linear_programming",
+name:"Form 5 Chapter 7: Linear Programming",
+label:"Pengaturcaraan Linear / <i>Linear Programming</i>"
+},
+
+
+{
+key:"form5_chapter8_kinematics",
+name:"Form 5 Chapter 8: Kinematics",
+label:"Kinematik Gerakan Linear / <i>Kinematics of Linear Motion</i>"
+}
+
+
+]
+
+
 };
 
-/* ================= TAB SWITCH ================= */
-function switchForm(form, el){
 
-  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
-  el.classList.add("active");
 
-  renderChapters(form);
-}
+const freeChapters=[
+
+"form4_chapter10_index_number"
+
+];
 
 /* ================= RENDER CHAPTER ================= */
 function renderChapters(form){
@@ -108,21 +239,104 @@ function renderChapters(form){
 
   let html = "";
 
+
   chapters[form].forEach(c=>{
+
+
+const hasAccess =
+
+freeChapters.includes(c.key)
+
+||
+
+window.userAccess[c.key] === true;
+
+
+
     html += `
-      <div class="video-card" onclick="openChapter('${c.name}')">
+
+    <div class="video-card"
+
+    onclick="${
+    hasAccess
+    ?
+    `openChapter('${c.name}')`
+:
+`lockedAlert('${c.name}')`
+    }">
+
+
         <div class="video-icon">
-          <span class="material-symbols-rounded">video_library</span>
+
+        <span class="material-symbols-rounded">
+
+        ${
+        hasAccess
+        ?
+        "video_library"
+        :
+        "lock"
+        }
+
+        </span>
+
         </div>
+
+
+
         <div class="video-info">
-          <div class="video-title">${c.name.split(":")[0]}</div>
-          <div class="video-title">${c.label}</div>
+
+
+        <div class="video-title">
+
+        ${c.name.split(":")[0]}
+
         </div>
-      </div>
+
+
+        <div class="video-title">
+
+        ${c.label}
+
+        </div>
+
+
+        </div>
+
+
+    </div>
+
     `;
+
+
   });
 
+
   root.innerHTML = html;
+
+
+}
+
+window.lockedAlert=function(chapterName){
+
+const contact = confirm(
+"This chapter is not included in your current learning package.\n\nWould you like to contact us for access?"
+);
+
+
+if(contact){
+
+const message =
+`Hi Sir Maududi, I am interested in getting access to ${chapterName} in Sembang Maths.`;
+
+
+window.open(
+"https://t.me/sembangmath?text=" + encodeURIComponent(message),
+"_blank"
+);
+
+}
+
 }
 
 /* ================= OPEN CHAPTER ================= */
@@ -197,11 +411,167 @@ function switchForm(form, el){
   }
 }
 
-showPage();
+
+;
+
 </script>
 
 
 <script type="module">
+
+import {initializeApp}
+from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+
+import {
+getFirestore,
+doc,
+getDoc
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+authDomain:"sembang-maths.firebaseapp.com",
+projectId:"sembang-maths",
+storageBucket:"sembang-maths.firebasestorage.app",
+messagingSenderId:"949561490562",
+appId:"1:949561490562:web:0adfde880f6de95c03489b"
+
+};
+
+
+const app = initializeApp(firebaseConfig);
+
+const auth=getAuth(app);
+
+const db=getFirestore(app);
+
+
+
+window.userAccess={};
+
+
+
+onAuthStateChanged(auth,async(user)=>{
+
+
+if(user){
+
+
+const snap=await getDoc(
+doc(db,"users",user.uid)
+);
+
+
+if(snap.exists()){
+
+window.userAccess =
+snap.data().access || {};
+
+}
+
+
+showPage();
+
+document.getElementById("loadingScreen").style.display="none";
+
+
+}
+
+else{
+
+window.userAccess={};
+
+showPage();
+
+document.getElementById("loadingScreen").style.display="none";
+
+}
+
+
+});
+
+
+// bawah semua function
+window.switchForm = switchForm;
+window.renderChapters = renderChapters;
+window.openChapter = openChapter;
+window.backToVideoRoot = backToVideoRoot;
+
+// CHECK LOGIN STATUS
+
+window.userLogged = false;
+
+
+onAuthStateChanged(auth, (user)=>{
+
+
+    if(user){
+
+        console.log("User login:", user.email);
+
+        window.userLogged = true;
+
+
+        document.getElementById("profileIcon").textContent =
+        "account_circle";
+
+
+    }else{
+
+
+        console.log("Belum login");
+
+        window.userLogged = false;
+
+
+        document.getElementById("profileIcon").textContent =
+        "person";
+
+
+    }
+
+
+});
+
+
+
+
+// PROFILE BUTTON
+
+window.checkProfile = function(){
+
+
+    if(window.userLogged){
+
+
+        window.location.href="profile.html";
+
+
+    }else{
+
+
+        window.location.href="login.html";
+
+
+    }
+
+
+}
 
 </script>
 
