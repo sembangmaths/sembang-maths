@@ -103,6 +103,7 @@ body{
 /* ================= HEADER ================= */
 .header{
     background:#f5eee3;
+    position:fixed;
     padding:16px 18px;
     display:flex;
     align-items:center;
