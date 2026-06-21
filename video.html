@@ -52,6 +52,9 @@
 <div id="app"></div>
 
 <script>
+
+let currentForm = "form4";
+
 let selectedChapter = "";
 
 /* ================= SIDEBAR ================= */
@@ -344,21 +347,125 @@ function openChapter(chapterName){
 
   selectedChapter = chapterName;
 
+
+  const tabs = document.querySelector(".tabs");
+
+
+  // tukar toggle Form 4/5 kepada 2025/2024
+  tabs.innerHTML = `
+
+    <div class="tab-slider" id="tabSlider"></div>
+
+    <div class="tab active"
+    onclick="switchYear('2025', this)">
+        2025
+    </div>
+
+    <div class="tab"
+    onclick="switchYear('2024', this)">
+        2024
+    </div>
+
+  `;
+
+
   const root = document.getElementById("videoRoot");
   const list = document.getElementById("videoList");
 
-  root.style.display = "none";
-  list.style.display = "block";
+  list.innerHTML = `
 
-  document.getElementById("backBtn").style.display = "block";
+<div class="video-search">
+
+<span class="material-symbols-rounded">
+search
+</span>
+
+<input 
+id="videoSearch"
+type="text"
+placeholder="Search video..."
+oninput="searchVideo()">
+
+</div>
+
+`;
+
+
+  root.style.display="none";
+  list.style.display="block";
+
+
+  document.getElementById("backBtn").style.display="block";
+
+  loadVideos(
+    chapterKeyFromName(chapterName),
+    "2025"
+);
+
+
+}
+
+function chapterKeyFromName(name){
+
+
+for(const form in chapters){
+
+const found = chapters[form]
+.find(c=>c.name===name);
+
+
+if(found){
+
+return found.key;
+
+}
+
+
+}
+
+
+return null;
+
 
 }
 
 /* ================= BACK ================= */
 function backToVideoRoot(){
-  document.getElementById("videoRoot").style.display = "block";
-  document.getElementById("videoList").style.display = "none";
-  document.getElementById("backBtn").style.display = "none";
+
+
+document.getElementById("videoRoot").style.display="block";
+document.getElementById("videoList").style.display="none";
+document.getElementById("backBtn").style.display="none";
+
+
+// restore Form toggle
+document.querySelector(".tabs").innerHTML=`
+
+<div class="tab-slider" id="tabSlider"></div>
+
+<div class="tab ${currentForm==="form4" ? "active":""}" 
+onclick="switchForm('form4',this)">
+Form 4
+</div>
+
+
+<div class="tab ${currentForm==="form5" ? "active":""}"
+onclick="switchForm('form5',this)">
+Form 5
+</div>
+
+`;
+
+
+// restore slider position
+const slider = document.getElementById("tabSlider");
+
+if(currentForm==="form5"){
+    slider.style.transform="translateX(100%)";
+}else{
+    slider.style.transform="translateX(0%)";
+}
+
 }
 
 /* ================= PAGE ================= */
@@ -395,20 +502,67 @@ function showPage(){
   },100);
 }
 
-function switchForm(form, el){
+function switchForm(form, el){ 
 
-  document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+  currentForm = form;
+
+
+  document.querySelectorAll(".tab").forEach(t => 
+    t.classList.remove("active")
+  );
+
   el.classList.add("active");
+
 
   renderChapters(form);
 
+
   const slider = document.getElementById("tabSlider");
+
 
   if(form === "form5"){
     slider.style.transform = "translateX(100%)";
-  } else {
+  }else{
     slider.style.transform = "translateX(0%)";
   }
+
+}
+
+function switchYear(year, el){
+
+
+document.querySelectorAll(".tab")
+.forEach(t=>{
+    t.classList.remove("active");
+});
+
+
+el.classList.add("active");
+
+
+
+const slider=document.getElementById("tabSlider");
+
+
+if(year==="2024"){
+
+slider.style.transform="translateX(100%)";
+
+}else{
+
+slider.style.transform="translateX(0%)";
+
+}
+
+
+// sini nanti load video ikut tahun
+
+loadVideos(
+chapterKeyFromName(selectedChapter),
+year
+);
+
+
 }
 
 
@@ -460,7 +614,214 @@ const auth=getAuth(app);
 
 const db=getFirestore(app);
 
+const YOUTUBE_API_KEY = "AIzaSyBVEcKsSpnviAEFMb9dusFKHlXI_vjjYKk";
 
+
+async function getYoutubeTitle(videoId){
+
+const url =
+`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${YOUTUBE_API_KEY}&part=snippet`;
+
+
+const response = await fetch(url);
+
+const data = await response.json();
+
+
+if(data.items && data.items.length > 0){
+
+return data.items[0].snippet.title;
+
+}
+
+
+return "Video";
+
+}
+
+
+async function loadVideos(chapterKey, year){
+
+const videoList = document.getElementById("videoList");
+
+
+// kosongkan video lama dahulu
+videoList.innerHTML = `
+<div style="
+text-align:center;
+padding:30px;
+color:#777;
+">
+Loading video...
+</div>
+`;
+
+
+
+const snap = await getDoc(
+    doc(
+        db,
+        "videos",
+        chapterKey
+    )
+);
+
+if(!snap.exists()){
+
+videoList.innerHTML = `
+<div style="
+text-align:center;
+padding:30px;
+color:#777;
+">
+Tiada video
+</div>
+`;
+
+return;
+
+}
+
+const data = snap.data();
+
+const videos = data[year] || [];
+
+window.allVideos = [];
+
+
+// ambil semua tajuk dulu
+for(let index=0; index<videos.length; index++){
+
+    const videoId = videos[index];
+
+    const title = await getYoutubeTitle(videoId);
+
+
+    window.allVideos.push({
+
+        id:videoId,
+
+        title:title
+
+    });
+
+}
+
+
+// SORT A-Z
+window.allVideos.sort((a,b)=>{
+
+    return a.title.localeCompare(
+        b.title,
+        'en',
+        {
+            sensitivity:"base"
+        }
+    );
+
+});
+
+
+
+let html="";
+
+
+// paparkan ikut susunan baru
+window.allVideos.forEach(v=>{
+
+
+html += `
+
+<div class="video-item"
+onclick="playYoutube('${v.id}')">
+
+
+<img 
+src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg"
+class="video-thumbnail">
+
+
+<div class="video-info">
+
+<div class="video-title">
+${v.title}
+</div>
+
+
+<div class="video-author">
+Sir Maududi
+</div>
+
+
+</div>
+
+
+</div>
+
+`;
+
+});
+
+
+
+
+document.getElementById("videoList").innerHTML = `
+
+<div class="video-search">
+
+<span class="material-symbols-rounded">
+search
+</span>
+
+<input 
+id="videoSearch"
+type="text"
+placeholder="Search video..."
+oninput="searchVideo()">
+
+</div>
+
+<div id="videoContainer">
+
+${html}
+
+</div>
+
+`;
+
+}
+
+window.loadVideos = loadVideos;
+
+window.playYoutube=function(id){
+
+const overlay=document.getElementById("playerOverlay");
+
+const player=document.getElementById("youtubePlayer");
+
+
+player.src =
+"https://www.youtube.com/embed/"
++id+
+"?autoplay=1";
+
+
+overlay.style.display="flex";
+
+}
+
+window.closePlayer=function(){
+
+const overlay=document.getElementById("playerOverlay");
+
+const player=document.getElementById("youtubePlayer");
+
+
+overlay.style.display="none";
+
+player.src="";
+
+}
 
 window.userAccess={};
 
@@ -573,7 +934,89 @@ window.checkProfile = function(){
 
 }
 
+window.searchVideo=function(){
+
+const keyword =
+document.getElementById("videoSearch")
+.value
+.toLowerCase()
+.trim();
+
+
+const container =
+document.getElementById("videoContainer");
+
+
+let html="";
+
+
+window.allVideos
+.filter(v=>{
+
+if(keyword===""){
+    return true;
+}
+
+return v.title.toLowerCase().includes(keyword);
+
+})
+.forEach(v=>{
+
+
+html += `
+
+<div class="video-item"
+onclick="playYoutube('${v.id}')">
+
+
+<img 
+src="https://img.youtube.com/vi/${v.id}/mqdefault.jpg"
+class="video-thumbnail">
+
+
+<div class="video-info">
+
+
+<div class="video-title">
+${v.title}
+</div>
+
+
+<div class="video-author">
+Sir Maududi
+</div>
+
+
+</div>
+
+
+</div>
+
+`;
+
+});
+
+
+container.innerHTML=html;
+
+
+}
+
 </script>
+
+<div id="playerOverlay" onclick="closePlayer()">
+
+    <div id="playerBox" onclick="event.stopPropagation()">
+
+        <iframe
+        id="youtubePlayer"
+        src=""
+        allowfullscreen>
+        </iframe>
+
+    </div>
+
+</div>
 
 </body>
 </html>
