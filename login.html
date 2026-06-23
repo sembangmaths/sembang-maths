@@ -32,7 +32,9 @@
         <input type="password" placeholder="Enter password">
     </div>
 
-    <button onclick="login()">LOGIN</button>
+<button id="loginBtn" onclick="login()">
+    LOGIN
+</button>
 
     <div class="small-text">
     <span class="link" onclick="resetPassword()">
@@ -92,8 +94,16 @@ window.login = function () {
 
 
 const email = document.querySelectorAll("input")[0].value;
-
 const password = document.querySelectorAll("input")[1].value;
+
+
+const btn = document.getElementById("loginBtn");
+
+btn.disabled = true;
+btn.innerHTML = `
+    LOGIN
+    <span class="spinner"></span>
+`;
 
 
 
@@ -105,23 +115,15 @@ signInWithEmailAndPassword(auth,email,password)
 const user = userCredential.user;
 
 
-
 await updateDoc(
-
 doc(db,"users",user.uid),
-
 {
-
 lastLogin:new Date()
-
 }
-
 );
 
 
-
 window.location.href="index.html";
-
 
 
 })
@@ -131,6 +133,11 @@ window.location.href="index.html";
 
 
 alert("Login gagal: "+error.message);
+
+
+// restore button
+btn.disabled = false;
+btn.innerHTML="LOGIN";
 
 
 });
