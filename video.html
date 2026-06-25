@@ -614,30 +614,6 @@ const auth=getAuth(app);
 
 const db=getFirestore(app);
 
-const YOUTUBE_API_KEY = "AIzaSyBVEcKsSpnviAEFMb9dusFKHlXI_vjjYKk";
-
-
-async function getYoutubeTitle(videoId){
-
-const url =
-`https://www.googleapis.com/youtube/v3/videos?id=${videoId}&key=${YOUTUBE_API_KEY}&part=snippet`;
-
-
-const response = await fetch(url);
-
-const data = await response.json();
-
-
-if(data.items && data.items.length > 0){
-
-return data.items[0].snippet.title;
-
-}
-
-
-return "Video";
-
-}
 
 
 async function loadVideos(chapterKey, year){
@@ -686,26 +662,13 @@ const data = snap.data();
 
 const videos = data[year] || [];
 
-window.allVideos = [];
+window.allVideos = videos.map(video => ({
 
+    id: video.youtubeId,
 
-// ambil semua tajuk dulu
-for(let index=0; index<videos.length; index++){
+    title: video.title
 
-    const videoId = videos[index];
-
-    const title = await getYoutubeTitle(videoId);
-
-
-    window.allVideos.push({
-
-        id:videoId,
-
-        title:title
-
-    });
-
-}
+}));
 
 
 // SORT A-Z
