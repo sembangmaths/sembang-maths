@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sembang Maths</title>
+
+<link rel="stylesheet" href="qna.css">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+</head>
+
+<body>
+
+
+<div class="overlay" onclick="closeSidebar()" id="overlay"></div>
+
+<div class="sidebar" id="sidebar">
+
+<div class="sidebar-profile" onclick="checkProfile()">
+    <span class="material-symbols-rounded" id="profileIcon">
+        person
+    </span>
+</div>
+
+
+<div class="menu-item" onclick="window.location.href='index.html'">
+    <span class="material-symbols-rounded">home</span>
+    <div class="label">Home</div>
+</div>
+
+<div class="menu-item" onclick="window.location.href='video.html'">
+    <span class="material-symbols-rounded">play_circle</span>
+    <div class="label">Video</div>
+</div>
+
+<div class="menu-item" onclick="window.location.href='pdf.html'">
+    <span class="material-symbols-rounded">description</span>
+    <div class="label">PDF</div>
+</div>
+
+<div class="menu-item active">
+    <span class="material-symbols-rounded">forum</span>
+    <div class="label">Q&A</div>
+</div>
+
+</div>
+
+<div id="app"></div>
+
+
+<div class="container">
+
+<h2 class="page-title">
+Have a Question?
+</h2>
+
+<div class="upload-box">
+
+<span class="material-symbols-rounded">
+add_photo_alternate
+</span>
+
+<input
+type="text"
+id="questionTitle"
+placeholder="Description: Fungsi Tingkatan 4 (example)">
+
+<input 
+type="file"
+id="questionFile"
+accept="image/*">
+
+<button onclick="sendQuestion()">
+Post
+</button>
+
+<p id="questionStatus"></p>
+
+</div>
+
+<h2 class="page-title">
+Community Questions
+</h2>
+
+<input
+type="text"
+id="searchQuestion"
+placeholder="Search question title...">
+
+
+<div id="questionList">
+
+<div class="loading">
+Loading...
+</div>
+
+</div>
+
+</div>
+
+
+<div id="previewModal">
+
+<div class="preview-box">
+    
+
+<button onclick="closePreview()">
+✕
+</button>
+
+<h3>
+Question:
+</h3>
+
+<img id="previewQuestion">
+
+<h3>
+Answer:
+</h3>
+
+<div id="answerList"></div>
+
+<button id="answerButton">
+Answer Question
+</button>
+
+</div>
+
+</div>
+
+<script>
+
+/* ACTIVE */
+function setActive(el){
+    document.querySelectorAll(".menu-item").forEach(i=>{
+        i.classList.remove("active");
+    });
+    el.classList.add("active");
+}
+
+/* SIDEBAR */
+function openSidebar(){
+    document.getElementById("sidebar").classList.add("active");
+    document.getElementById("overlay").classList.add("active");
+}
+
+function closeSidebar(){
+    document.getElementById("sidebar").classList.remove("active");
+    document.getElementById("overlay").classList.remove("active");
+}
+
+function toggleSidebar(){
+    document.getElementById("sidebar").classList.contains("active")
+        ? closeSidebar()
+        : openSidebar();
+}
+
+/* PAGE */
+function showPage(page){
+
+let content = "";
+
+if(page === "qna"){
+content = `
+<div class="header">
+    <div class="hamburger" onclick="toggleSidebar()">☰</div>
+
+    <div class="logo">
+        Q&A
+    </div>
+</div>
+`;
+}
+
+
+document.getElementById("app").innerHTML = content;
+closeSidebar();
+}
+
+/* INIT */
+showPage("qna");
+
+
+</script>
+
+
+<script type="module">
+
+import {
+initializeApp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+
+import {
+getAuth,
+onAuthStateChanged
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+import {
+getFirestore,
+collection,
+addDoc,
+getDocs,
+getDoc,
+doc,
+updateDoc,
+query,
+where,
+orderBy,
+limit,
+serverTimestamp
+}
+from
+"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+authDomain:"sembang-maths.firebaseapp.com",
+projectId:"sembang-maths",
+storageBucket:"sembang-maths.firebasestorage.app",
+messagingSenderId:"949561490562",
+appId:"1:949561490562:web:0adfde880f6de95c03489b"
+
+};
+
+
+const app=initializeApp(firebaseConfig);
+
+const db=getFirestore(app);
+
+const auth=getAuth(app);
+
+let currentUser=null;
+let authReady=false;
+
+
+
+// CHECK LOGIN STATUS
+
+window.userLogged = false;
+
+
+onAuthStateChanged(auth,(user)=>{
+
+    authReady = true;
+    currentUser = user;
+    window.userLogged = !!user;
+
+    const icon = document.getElementById("profileIcon");
+
+    if(icon){
+        icon.textContent = user
+            ? "account_circle"
+            : "person";
+    }
+
+    console.log("Auth Ready:", authReady);
+    console.log("Current User:", currentUser);
+
+});
+
+
+
+
+// PROFILE BUTTON
+
+window.checkProfile = function(){
+
+
+    if(window.userLogged){
+
+
+        window.location.href="profile.html";
+
+
+    }else{
+
+
+        window.location.href="login.html";
+
+
+    }
+
+
+}
+
+let allQuestions=[];
+
+
+// ===============================
+// CLOUDINARY
+// ===============================
+
+
+const CLOUD_NAME="dwg4mfcga";
+
+const UPLOAD_PRESET="sembang_maths";
+
+
+async function uploadCloudinary(file,folder){
+
+const compressed=await compressImage(file);
+
+
+const url=
+`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
+
+const formData=new FormData();
+
+formData.append(
+"file",
+compressed
+);
+
+formData.append(
+"upload_preset",
+UPLOAD_PRESET
+);
+
+formData.append(
+"folder",
+folder
+);
+
+
+const response=await fetch(
+url,
+{
+method:"POST",
+body:formData
+}
+);
+
+
+const data=await response.json();
+
+
+if(!data.secure_url){
+
+throw new Error(
+"Upload gagal"
+);
+
+}
+
+
+return data.secure_url;
+
+}
+
+
+// ===============================
+// IMAGE COMPRESS
+// ===============================
+
+
+function compressImage(file){
+
+return new Promise((resolve)=>{
+
+const img=new Image();
+
+const reader=new FileReader();
+
+
+reader.onload=(e)=>{
+
+img.src=e.target.result;
+
+};
+
+
+
+
+img.onload=()=>{
+
+const canvas=document.createElement("canvas");
+
+const maxWidth=1200;
+
+let width=img.width;
+
+let height=img.height;
+
+
+if(width>maxWidth){
+
+height*=maxWidth/width;
+
+width=maxWidth;
+
+}
+
+
+canvas.width=width;
+
+canvas.height=height;
+
+
+const ctx=canvas.getContext("2d");
+
+ctx.drawImage(
+img,
+0,
+0,
+width,
+height
+);
+
+
+canvas.toBlob(
+(blob)=>resolve(blob),
+"image/jpeg",
+0.8
+);
+
+};
+
+
+reader.readAsDataURL(file);
+
+});
+
+}
+
+// ===============================
+// HANTAR SOALAN
+// ===============================
+
+window.sendQuestion=async()=>{
+
+try{
+
+if(!authReady){
+alert("Please wait...");
+return;
+}
+
+if(!currentUser){
+alert("Please login first.");
+return;
+}
+
+
+const file=document
+.getElementById("questionFile")
+.files[0];
+
+const title=document
+.getElementById("questionTitle")
+.value.trim();
+
+
+if(!title){
+
+alert("Please enter a title for your question.");
+
+return;
+
+}
+
+if(!file){
+
+alert("Please upload a question image.");
+
+return;
+
+}
+
+
+if(file.size>10*1024*1024){
+
+alert("Saiz gambar terlalu besar");
+
+return;
+
+}
+
+
+const imageURL=await uploadCloudinary(
+file,
+"sembang_maths/questions"
+);
+
+
+await addDoc(
+collection(db,"questions"),
+{
+
+questionImage:imageURL,
+
+title:title,
+
+userId:currentUser.uid,
+
+status:"pending",
+
+visibility:false,
+
+hasAnswer:false,
+
+createdAt:serverTimestamp()
+
+}
+);
+
+
+alert("Your question has been submitted and is awaiting approval.");
+
+
+document.getElementById("questionFile").value="";
+
+
+}
+
+
+catch(error){
+
+alert(error.message);
+
+}
+
+};
+
+
+// ===============================
+// LOAD QUESTIONS
+// ===============================
+
+function displayQuestions(questions){
+
+const list=document.getElementById("questionList");
+
+list.innerHTML="";
+
+
+if(questions.length===0){
+
+list.innerHTML="No questions found";
+
+return;
+
+}
+
+
+questions.forEach((item)=>{
+
+const data=item.data;
+
+
+list.innerHTML+=`
+
+<div class="qna-card"
+onclick="openPreview('${item.id}')">
+
+
+<div class="qna-icon">
+
+<img src="${data.questionImage}">
+
+</div>
+
+
+<div class="qna-info">
+
+
+<div class="qna-title">
+${data.title}
+</div>
+
+
+<div class="status ${data.hasAnswer ? "answered" : "not-answered"}">
+
+${data.hasAnswer ? "Answered" : "Unanswered"}
+
+</div>
+
+
+</div>
+
+
+</div>
+
+`;
+
+});
+
+}
+
+async function loadQuestions(){
+
+const list=document.getElementById("questionList");
+
+list.innerHTML="Loading...";
+
+
+try{
+
+
+const q = query(
+
+    collection(db,"questions"),
+
+    where("visibility","==",true),
+
+    orderBy("createdAt","desc"),
+
+    limit(200)
+
+);
+
+
+const snapshot=await getDocs(q);
+
+
+allQuestions=[];
+
+
+snapshot.forEach((item)=>{
+
+allQuestions.push({
+
+id:item.id,
+
+data:item.data()
+
+});
+
+});
+
+
+if(snapshot.empty){
+
+list.innerHTML="No questions available";
+
+return;
+
+}
+
+displayQuestions(allQuestions);
+
+
+}
+
+
+catch(error){
+
+console.log(error);
+
+list.innerHTML="Failed to load questions";
+
+}
+
+
+}
+
+
+
+
+// ===============================
+// OPEN PREVIEW
+// ===============================
+
+
+
+// ===============================
+// LOAD ANSWERS
+// ===============================
+
+
+async function loadAnswers(questionId){
+
+
+const box=document.getElementById(
+"answerList"
+);
+
+
+box.innerHTML="";
+
+
+const q=query(
+
+collection(db,"answers"),
+
+where(
+"questionId",
+"==",
+questionId
+
+)
+
+);
+
+
+const snapshot=await getDocs(q);
+
+
+if(snapshot.empty){
+
+box.innerHTML="Belum ada jawapan";
+
+return;
+
+}
+
+
+snapshot.forEach((item)=>{
+
+const data=item.data();
+
+
+if(data.visibility){
+
+box.innerHTML+=`
+
+<img 
+src="${data.answerImage}"
+class="answer-image">
+
+`;
+
+}
+
+});
+
+
+}
+
+// ===============================
+// ANSWER QUESTION
+// ===============================
+
+window.answerQuestion=()=>{
+
+if(!currentUser){
+
+alert("Please login first.");
+
+return;
+
+}
+
+
+const input=document.createElement("input");
+
+input.type="file";
+
+input.accept="image/*";
+
+
+input.onchange=async()=>{
+
+
+try{
+
+
+const file=input.files[0];
+
+
+if(!file){
+
+return;
+
+}
+
+
+if(file.size>10*1024*1024){
+
+alert("Saiz gambar terlalu besar");
+
+return;
+
+}
+
+
+const answerURL=await uploadCloudinary(
+
+file,
+
+"sembang_maths/answers"
+
+);
+
+
+
+const questionId=currentQuestionId; 
+
+
+await addDoc(
+
+collection(db,"answers"),
+
+{
+
+questionId:questionId,
+
+answerImage:answerURL,
+
+answeredBy:currentUser.uid,
+
+status:"pending",
+
+visibility:false,
+
+createdAt:serverTimestamp()
+
+}
+
+);
+
+
+
+alert(
+"Your answer has been submitted and is awaiting approval."
+);
+
+
+closePreview();
+
+
+}
+
+
+catch(error){
+
+alert(error.message);
+
+}
+
+
+};
+
+
+input.click();
+
+};
+
+
+// ===============================
+// SIMPAN QUESTION ID
+// ===============================
+
+let currentQuestionId="";
+
+window.openPreview=async(id)=>{
+
+currentQuestionId=id;
+
+const questionSnap=await getDoc(
+doc(
+db,
+"questions",
+id
+)
+);
+
+
+const data=questionSnap.data();
+
+
+document.getElementById(
+"previewQuestion"
+).src=data.questionImage;
+
+
+document.getElementById(
+"previewModal"
+).style.display="flex";
+
+
+loadAnswers(id);
+
+
+document.getElementById(
+"answerButton"
+).onclick=()=>{
+
+answerQuestion();
+
+};
+
+};
+
+
+// ===============================
+// CLOSE PREVIEW
+// ===============================
+
+window.closePreview=()=>{
+
+document.getElementById(
+"previewModal"
+).style.display="none";
+
+};
+
+
+// ===============================
+// START
+// ===============================
+
+
+document
+.getElementById("searchQuestion")
+.addEventListener("input",(e)=>{
+
+const keyword=e.target.value
+.toLowerCase()
+.trim();
+
+
+if(keyword===""){
+
+displayQuestions(allQuestions);
+
+return;
+
+}
+
+
+const filtered=allQuestions.filter((item)=>{
+
+const title=item.data.title || "";
+
+return title
+.toLowerCase()
+.includes(keyword);
+
+});
+
+
+displayQuestions(filtered);
+
+});
+
+loadQuestions();
+
+</script>
+
+</body>
+
+</html>
