@@ -1,0 +1,493 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+<meta charset="UTF-8">
+<title>Live Class</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body{
+    margin:0;
+    background:#111;
+    font-family:Arial;
+    height:100vh;
+    overflow:hidden;
+        opacity: 1;
+    transition: opacity 0.4s ease;
+}
+
+/* LIVE */
+#liveContainer{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100vh;
+}
+
+iframe{
+    width:100%;
+    height:100vh;
+    border:none;
+}
+
+/* BLOCK */
+#blockOverlay{
+    position:absolute;
+    top:0;
+    left:0;
+    width:100%;
+    height:100vh;
+    display:none;
+    z-index:5;
+    background:transparent;
+}
+
+/* START */
+#startOverlay{
+    position:fixed;
+    inset:0;
+    background:rgba(0,0,0,.5);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    z-index:9999;
+}
+
+#startBox{
+    background:#fff;
+    padding:25px 40px;
+    border-radius:14px;
+    font-size:20px;
+    font-weight:bold;
+    cursor:pointer;
+    user-select:none;
+}
+
+/* CHAT */
+#chatContainer{
+    position:absolute;
+    left:10px;
+    bottom:10px;
+    width:320px;
+    height:80vh;
+    display:flex;
+    flex-direction:column;
+    background:rgba(0,0,0,0.15);
+    border-radius:12px;
+    border:1px solid rgba(255,255,255,0.1);
+    overflow:hidden;
+    z-index:10;
+    transition:0.3s;
+}
+
+#chatContainer.hidden{
+    transform:translateX(-110%);
+    opacity:0;
+}
+
+#messages{
+    flex:1;
+    overflow-y:auto;
+    padding:10px;
+    color:white;
+    font-size:14px;
+    display:flex;
+    flex-direction:column;
+    justify-content:flex-end;
+}
+
+.msg{
+    margin-bottom:6px;
+    padding:6px 8px;
+    border-radius:10px;
+    background:rgba(255,255,255,0.08);
+    word-break:break-word;
+}
+
+#inputBox{
+    display:flex;
+    padding:10px;
+    gap:5px;
+    background:rgba(0,0,0,0.2);
+}
+
+input{
+    flex:1;
+    padding:8px;
+    border:none;
+    border-radius:6px;
+    outline:none;
+}
+
+button{
+    padding:8px 10px;
+    border:none;
+    border-radius:6px;
+    background:#4CAF50;
+    color:white;
+    cursor:pointer;
+}
+
+/* UI */
+#uiButtons{
+    position:absolute;
+    top:10px;
+    left:10px;
+    right:10px;
+    display:flex;
+    justify-content:space-between;
+    z-index:20;
+}
+
+.fab{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+}
+
+.fab svg{
+    width:22px;
+    height:22px;
+    fill:white;
+}
+
+body.fade-out{
+    opacity:0;
+    transition:opacity 0.4s ease;
+}
+</style>
+</head>
+
+<body>
+
+<div id="startOverlay">
+    <div id="startBox">▶</div>
+</div>
+
+<div id="uiButtons">
+
+    <div class="leftBtns">
+        <button id="toggleChat" class="fab">
+            <svg viewBox="0 0 24 24">
+                <path d="M4 4h16v12H5.17L4 17.17V4zm2 2v7h12V6H6zm0 9h9.17L18 18V15H6v0z"/>
+            </svg>
+        </button>
+    </div>
+
+    <div class="rightBtns">
+        <button id="homeBtn" class="fab">
+            <svg viewBox="0 0 24 24">
+                <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/>
+            </svg>
+        </button>
+
+        <button id="refreshBtn" class="fab">
+            <svg viewBox="0 0 24 24">
+                <path d="M17.65 6.35A7.95 7.95 0 0012 4V1L7 6l5 5V7a5 5 0 11-5 5H5a7 7 0 107.65-5.65z"/>
+            </svg>
+        </button>
+    </div>
+
+</div>  
+
+</div>
+
+<div id="liveContainer">
+    <iframe id="yt" allowfullscreen></iframe>
+    <div id="blockOverlay"></div>
+</div>
+
+<div id="chatContainer" class="hidden">
+    <div id="messages"></div>
+    <div id="inputBox">
+        <input id="msgInput" placeholder="Tanya soalan..." maxlength="300">
+        <button onclick="sendMsg()">Hantar</button>
+    </div>
+</div>
+
+<script type="module">
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { getAuth, onAuthStateChanged } 
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+
+import { 
+  getFirestore, doc, getDoc,
+  collection, addDoc,
+  serverTimestamp,
+  onSnapshot,
+  query,
+  orderBy,
+  limit
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+/* FIREBASE */
+const firebaseConfig = {
+
+apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+authDomain:"sembang-maths.firebaseapp.com",
+projectId:"sembang-maths",
+storageBucket:"sembang-maths.firebasestorage.app",
+messagingSenderId:"949561490562",
+appId:"1:949561490562:web:0adfde880f6de95c03489b"
+
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* ELEMENT */
+const startOverlay = document.getElementById("startOverlay");
+const liveContainer = document.getElementById("liveContainer");
+const blockOverlay = document.getElementById("blockOverlay");
+const yt = document.getElementById("yt");
+
+/* STATE */
+let blockTimer = null;
+
+let currentUserName = "Student";
+let currentUser = null;
+let chatStarted = false;
+let lastSendTime = 0;
+
+const COOLDOWN = 10000;
+
+/* LOAD LIVE FROM FIRESTORE */
+async function loadLive(){
+
+    try {
+
+        const ref = doc(db, "live", "current");
+        const snap = await getDoc(ref);
+
+        if(!snap.exists()){
+            console.log("❌ Document tak wujud");
+            return;
+        }
+
+        const data = snap.data();
+
+        console.log("📦 Data Firestore:", data);
+
+        const youtubeId = data.youtubeId;
+
+        if(!youtubeId){
+            console.log("❌ youtubeId kosong");
+            return;
+        }
+
+        const iframe = document.getElementById("yt");
+
+        const url = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&playsinline=1`;
+
+        console.log("▶ Loading:", url);
+
+        // FORCE RESET supaya iframe render semula
+        iframe.src = "";
+        
+        setTimeout(() => {
+            iframe.src = url;
+        }, 200);
+
+    } catch (err){
+        console.error("🔥 Firestore error:", err);
+    }
+
+    console.log("SNAP EXISTS:", snap.exists());
+console.log("SNAP DATA:", snap.data());
+console.log("YOUTUBE ID:", snap.data()?.youtubeId);
+}
+
+/* AUTH CHECK */
+onAuthStateChanged(auth, async (user) => {
+
+    if(user){
+        currentUser = user;
+
+        const userRef = doc(db, "users", user.uid);
+        const userSnap = await getDoc(userRef);
+
+        if(userSnap.exists()){
+            currentUserName = userSnap.data().name || user.email;
+        } else {
+            currentUserName = user.email;
+        }
+
+        liveContainer.style.display = "block";
+        startOverlay.style.display = "flex";
+
+        loadLive();
+        listenChat(); // 🔥 start realtime chat
+    } 
+    else {
+        startOverlay.innerHTML = "<div id='startBox'>Please sign in to continue</div>";
+        document.getElementById("startBox").onclick = () => {
+            window.location.href = "login.html";
+        };
+        startOverlay.style.display = "flex";
+        liveContainer.style.display = "none";
+    }
+});     
+
+/* START */
+startOverlay.addEventListener("click", () => {
+
+    startOverlay.style.display = "none";
+
+    if(blockTimer) clearTimeout(blockTimer);
+
+    blockTimer = setTimeout(() => {
+        blockOverlay.style.display = "block";
+    }, 10000);
+
+});
+
+document.getElementById("homeBtn").onclick = () => {
+    document.body.classList.add("fade-out");
+
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 400); // ikut duration CSS
+};
+
+/* REFRESH */
+document.getElementById("refreshBtn").onclick = () => {
+
+    const current = yt.src;
+    yt.src = "";
+
+    setTimeout(() => {
+        yt.src = current;
+    }, 200);
+
+    blockOverlay.style.display = "none";
+    startOverlay.style.display = "flex";
+
+    if(blockTimer) clearTimeout(blockTimer);
+};
+
+/* CHAT */
+async function sendMsg(){
+
+    const input = document.getElementById("msgInput");
+    const msg = input.value.trim();
+
+    if(!msg || !currentUser) return;
+    if(!canSendMessage()) return;
+
+    await addDoc(collection(db, "chats"), {
+        name: currentUserName,
+        message: msg,
+        uid: currentUser.uid,
+        role: "student",
+        type: "normal",
+        createdAt: serverTimestamp()
+    });
+
+    input.value = "";
+}
+
+function listenChat(){
+
+    if(chatStarted) return;
+    chatStarted = true;
+
+    const q = query(
+        collection(db, "chats"),
+        orderBy("createdAt", "asc"),
+        limit(50)
+    );
+
+    onSnapshot(q, (snapshot) => {
+
+        const box = document.getElementById("messages");
+        box.innerHTML = "";
+
+        snapshot.forEach((docSnap) => {
+
+            const data = docSnap.data();
+
+            const div = document.createElement("div");
+            div.className = "msg";
+
+            // highlight announcement
+            if(data.type === "announcement"){
+                div.style.background = "#ffcc00";
+                div.style.color = "#000";
+                div.style.fontWeight = "bold";
+            }
+
+            div.innerText = `${data.name}: ${data.message}`;
+
+            box.appendChild(div);
+        });
+
+        box.scrollTop = box.scrollHeight;
+    });
+}
+
+
+function canSendMessage(){
+
+    const now = Date.now();
+    const remaining = COOLDOWN - (now - lastSendTime);
+
+    if(remaining > 0){
+        alert(`Please wait ${Math.ceil(remaining/1000)} seconds before sending your next message.`);
+        return false;
+    }
+
+    lastSendTime = now;
+    return true;
+}
+
+function goHome(){
+    document.body.classList.add("fade-out");
+
+    setTimeout(() => {
+        window.location.href = "index.html";
+    }, 400);
+}
+
+window.sendMsg = sendMsg;
+
+/* CHAT TOGGLE */
+document.getElementById("toggleChat").onclick = () => {
+    document.getElementById("chatContainer").classList.toggle("hidden");
+};
+
+document.addEventListener("contextmenu", function(e){
+    e.preventDefault();
+});
+
+/* OPTIONAL: block shortcut devtools */
+document.addEventListener("keydown", function(e){
+
+    if(e.key === "F12"){
+        e.preventDefault();
+    }
+
+    if(e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key)){
+        e.preventDefault();
+    }
+
+    if(e.ctrlKey && e.key.toLowerCase() === "u"){
+        e.preventDefault();
+    }
+});
+
+
+
+</script>
+
+</body>
+</html>
