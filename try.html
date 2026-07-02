@@ -145,6 +145,41 @@ button{
     z-index:20;
 }
 
+#uiButtons{
+    position:absolute;
+    top:10px;
+    left:10px;
+    right:10px;
+    display:flex;
+    justify-content:space-between;
+    z-index:20;
+}
+
+.fab{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    background:rgba(255,255,255,0.12);
+    backdrop-filter: blur(10px);
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.fab:hover{
+    transform:scale(1.08);
+    background:rgba(255,255,255,0.2);
+}
+
+.fab svg{
+    width:22px;
+    height:22px;
+    fill:white;
+}
+
 </style>
 </head>
 
@@ -156,8 +191,24 @@ button{
 </div>
 
 <!-- BUTTONS -->
-<button id="toggleChat">💬 Chat</button>
-<button id="refreshBtn">🔄 Refresh</button>
+<!-- FLOATING BUTTONS -->
+<div id="uiButtons">
+
+    <!-- CHAT -->
+    <button id="toggleChat" class="fab">
+        <svg viewBox="0 0 24 24">
+            <path d="M4 4h16v12H5.17L4 17.17V4zm2 2v7h12V6H6zm0 9h9.17L18 18V15H6v0z"/>
+        </svg>
+    </button>
+
+    <!-- REFRESH -->
+    <button id="refreshBtn" class="fab">
+        <svg viewBox="0 0 24 24">
+            <path d="M17.65 6.35A7.95 7.95 0 0012 4V1L7 6l5 5V7a5 5 0 11-5 5H5a7 7 0 107.65-5.65z"/>
+        </svg>
+    </button>
+
+</div>
 
 <!-- LIVE -->
 <div id="liveContainer">
