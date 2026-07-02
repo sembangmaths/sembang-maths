@@ -79,8 +79,11 @@ iframe{
     border:1px solid rgba(255,255,255,0.1);
     overflow:hidden;
     z-index:10;
+
+    transition:0.3s;
 }
 
+/* DEFAULT HIDDEN */
 #chatContainer.hidden{
     transform:translateX(-110%);
     opacity:0;
@@ -130,21 +133,7 @@ button{
     cursor:pointer;
 }
 
-/* BUTTON UI */
-#toggleChat{
-    position:absolute;
-    top:10px;
-    left:10px;
-    z-index:20;
-}
-
-#refreshBtn{
-    position:absolute;
-    top:10px;
-    right:10px;
-    z-index:20;
-}
-
+/* ===== UI BUTTONS ===== */
 #uiButtons{
     position:absolute;
     top:10px;
@@ -190,18 +179,15 @@ button{
     <div id="startBox">▶</div>
 </div>
 
-<!-- BUTTONS -->
-<!-- FLOATING BUTTONS -->
+<!-- UI BUTTONS -->
 <div id="uiButtons">
 
-    <!-- CHAT -->
     <button id="toggleChat" class="fab">
         <svg viewBox="0 0 24 24">
             <path d="M4 4h16v12H5.17L4 17.17V4zm2 2v7h12V6H6zm0 9h9.17L18 18V15H6v0z"/>
         </svg>
     </button>
 
-    <!-- REFRESH -->
     <button id="refreshBtn" class="fab">
         <svg viewBox="0 0 24 24">
             <path d="M17.65 6.35A7.95 7.95 0 0012 4V1L7 6l5 5V7a5 5 0 11-5 5H5a7 7 0 107.65-5.65z"/>
@@ -213,12 +199,11 @@ button{
 <!-- LIVE -->
 <div id="liveContainer">
     <iframe id="yt" allowfullscreen></iframe>
-
     <div id="blockOverlay"></div>
 </div>
 
-<!-- CHAT -->
-<div id="chatContainer">
+<!-- CHAT (DEFAULT HIDDEN) -->
+<div id="chatContainer" class="hidden">
 
     <div id="messages"></div>
 
@@ -231,37 +216,25 @@ button{
 
 <script>
 
-/* =====================
-   STATE CONTROL
-===================== */
-let started = false;
+/* STATE */
 let blockTimer = null;
 
-/* =====================
-   YOUTUBE
-===================== */
+/* YOUTUBE */
 const youtubeLink = "X4VbdwhkE10";
 const yt = document.getElementById("yt");
 
-function loadVideo(){
-    yt.src =
-    "https://www.youtube.com/embed/" +
-    youtubeLink +
-    "?playsinline=1";
-}
+yt.src =
+"https://www.youtube.com/embed/" +
+youtubeLink +
+"?playsinline=1";
 
-loadVideo();
-
-/* =====================
-   START FLOW
-===================== */
+/* START FLOW */
 const startOverlay = document.getElementById("startOverlay");
 const blockOverlay = document.getElementById("blockOverlay");
 
 startOverlay.addEventListener("click", () => {
 
     startOverlay.style.display = "none";
-    started = true;
 
     if(blockTimer){
         clearTimeout(blockTimer);
@@ -273,9 +246,7 @@ startOverlay.addEventListener("click", () => {
 
 });
 
-/* =====================
-   REFRESH (RESET SEMUA)
-===================== */
+/* REFRESH RESET */
 document.getElementById("refreshBtn").onclick = () => {
 
     const current = yt.src;
@@ -286,8 +257,6 @@ document.getElementById("refreshBtn").onclick = () => {
         yt.src = current;
     }, 200);
 
-    // RESET STATE
-    started = false;
     blockOverlay.style.display = "none";
     startOverlay.style.display = "flex";
 
@@ -296,9 +265,7 @@ document.getElementById("refreshBtn").onclick = () => {
     }
 };
 
-/* =====================
-   CHAT
-===================== */
+/* CHAT */
 function sendMsg(){
 
     const input = document.getElementById("msgInput");
@@ -325,9 +292,7 @@ document.getElementById("msgInput").addEventListener("keydown",(e)=>{
     if(e.key==="Enter") sendMsg();
 });
 
-/* =====================
-   CHAT TOGGLE
-===================== */
+/* CHAT TOGGLE */
 const chat = document.getElementById("chatContainer");
 const btn = document.getElementById("toggleChat");
 
