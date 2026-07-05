@@ -3,10 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
 <title>Sembang Maths</title>
 
+<!-- FAVICON (browser tab icon) -->
+<link rel="icon" type="image/png" href="icon-192.png">
+
+<!-- APPLE ICON (iPhone home screen) -->
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- PWA MANIFEST -->
+<link rel="manifest" href="manifest.json">
+
+<!-- ICON FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
 <link rel="stylesheet" href="index.css">
+
+<meta name="theme-color" content="#111111">
 
 </head>
 
@@ -17,12 +31,10 @@
 <div class="sidebar" id="sidebar">
 
 <div class="sidebar-profile" onclick="checkProfile()">
-    <span class="material-symbols-rounded" id="profileIcon">
-        person
-    </span>
+    <span class="material-symbols-rounded" id="profileIcon">person</span>
 </div>
 
-<div class="menu-item active">
+<div class="menu-item active" onclick="setActive(this);showPage('home')">
     <span class="material-symbols-rounded">home</span>
     <div class="label">Home</div>
 </div>
@@ -42,16 +54,11 @@
     <div class="label">Q&A</div>
 </div>
 
-
 </div>
 
 <div id="app"></div>
 
-
 <script>
-
-
-/* ACTIVE */
 function setActive(el){
     document.querySelectorAll(".menu-item").forEach(i=>{
         i.classList.remove("active");
@@ -76,8 +83,7 @@ function toggleSidebar(){
         : openSidebar();
 }
 
-
-/* PAGE */
+/* PAGE SYSTEM */
 function showPage(page){
 
 let content = "";
@@ -86,21 +92,15 @@ if(page === "home"){
 content = `
 <div class="header">
     <div class="hamburger" onclick="toggleSidebar()">☰</div>
-
-    <div class="logo">
-        Sembang Maths
-    </div>
+    <div class="logo">Sembang Maths</div>
 </div>
-
 
 <div class="hero-card">
     <div class="hero-badge">Matematik Tambahan</div>
 
     <h1>Belajar Dengan Lebih Mudah</h1>
 
-    <p>
-        Nota, video pembelajaran dan latihan semuanya dalam satu tempat.
-    </p>
+    <p>Nota, video dan latihan dalam satu tempat.</p>
 
     <button class="hero-btn" onclick="window.location.href='video.html'">
         Mulakan Belajar
@@ -109,23 +109,11 @@ content = `
 
 <div class="quick-section">
 
-    <div class="quick-card" onclick="window.location.href='video.html'">
-        <span class="material-symbols-rounded">play_circle</span>
-        <h3>Video</h3>
-        <p>Pembelajaran secara visual.</p>
-    </div>
-
-    <div class="quick-card" onclick="window.location.href='pdf.html'">
-        <span class="material-symbols-rounded">description</span>
-        <h3>Nota PDF</h3>
-        <p>Nota ringkas dan padat.</p>
-    </div>
-
     <div class="quick-card live" onclick="window.location.href='trylive.html'">
-    <span class="material-symbols-rounded">live_tv</span>
-    <h3>Live Class</h3>
-    <p>Sesi live pembelajaran bersama cikgu.</p>
-</div>
+        <span class="material-symbols-rounded">live_tv</span>
+        <h3>Study & Borak</h3>
+        <p>Belajar sambil relaks.</p>
+    </div>
 
 </div>
 
@@ -154,109 +142,44 @@ content = `
 `;
 }
 
-
 document.getElementById("app").innerHTML = content;
 closeSidebar();
 }
 
-
-/* INIT */
 showPage("home");
-
 </script>
 
 <script type="module">
-
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
-import { 
-getAuth,
-onAuthStateChanged
-} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 const firebaseConfig = {
-
   apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
   authDomain: "sembang-maths.firebaseapp.com",
   projectId: "sembang-maths",
   storageBucket: "sembang-maths.firebasestorage.app",
   messagingSenderId: "949561490562",
   appId: "1:949561490562:web:0adfde880f6de95c03489b"
-
 };
 
-
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
-
-
-// CHECK LOGIN STATUS
 
 window.userLogged = false;
 
-
 onAuthStateChanged(auth, (user)=>{
-
-
     if(user){
-
-        console.log("User login:", user.email);
-
         window.userLogged = true;
-
-
-        document.getElementById("profileIcon").textContent =
-        "account_circle";
-
-
+        document.getElementById("profileIcon").textContent = "account_circle";
     }else{
-
-
-        console.log("Belum login");
-
         window.userLogged = false;
-
-
-        document.getElementById("profileIcon").textContent =
-        "person";
-
-
+        document.getElementById("profileIcon").textContent = "person";
     }
-
-
 });
 
-
-
-
-// PROFILE BUTTON
-
 window.checkProfile = function(){
-
-
-    if(window.userLogged){
-
-
-        window.location.href="profile.html";
-
-
-    }else{
-
-
-        window.location.href="login.html";
-
-
-    }
-
-
+    window.location.href = window.userLogged ? "profile.html" : "login.html";
 }
-
-
-
-
 </script>
 
 </body>
