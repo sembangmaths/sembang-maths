@@ -8,12 +8,16 @@
 <style>
 body{
     margin:0;
-    background:#111;
+    background:
+        radial-gradient(circle at top left, rgba(255,255,255,0.08), transparent 40%),
+        radial-gradient(circle at bottom right, rgba(255,255,255,0.05), transparent 40%),
+        #0f0f0f;
+
     font-family:Arial;
     height:100vh;
     overflow:hidden;
-        opacity: 1;
-    transition: opacity 0.4s ease;
+    opacity:1;
+    transition:opacity 0.4s ease;
 }
 
 /* LIVE */
@@ -43,7 +47,7 @@ iframe{
     background:transparent;
 }
 
-/* START */
+/* START OVERLAY */
 #startOverlay{
     position:fixed;
     inset:0;
@@ -54,17 +58,35 @@ iframe{
     z-index:9999;
 }
 
+/* START BOX GLASS */
 #startBox{
-    background:#fff;
+    background:rgba(255,255,255,0.06);
+    backdrop-filter:blur(22px) saturate(150%);
+    -webkit-backdrop-filter:blur(22px) saturate(150%);
+
+    border:1px solid rgba(255,255,255,0.14);
+
+    box-shadow:
+        0 10px 25px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.12);
+
     padding:25px 40px;
-    border-radius:14px;
+    border-radius:16px;
     font-size:20px;
     font-weight:bold;
     cursor:pointer;
     user-select:none;
+    color:white;
+        mix-blend-mode: normal;
+    filter: saturate(1) contrast(1);
 }
 
-/* CHAT */
+#startBox:hover{
+    background:rgba(255,255,255,0.12);
+    transform:scale(1.03);
+}
+
+/* CHAT CONTAINER GLASS */
 #chatContainer{
     position:absolute;
     left:10px;
@@ -73,30 +95,70 @@ iframe{
     height:80vh;
     display:flex;
     flex-direction:column;
-    background:rgba(0,0,0,0.15);
-    border-radius:12px;
-    border:1px solid rgba(255,255,255,0.1);
+
+    background:rgba(0, 0, 0, 0.251);
+
+
+    border-radius:16px;
+
+
     overflow:hidden;
-    z-index:10;
-    transition:0.3s;
+
+    /* 🔥 INI PART FADE */
+-webkit-mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 30%,
+    black 80%,
+    black 100%
+);
+
+mask-image: linear-gradient(
+    to bottom,
+    transparent 0%,
+    transparent 30%,
+    black 80%,
+    black 100%
+);
+
+    z-index: 10;
+
+    clip-path: inset(0 0 0 0);
+    transition: clip-path 0.35s ease, opacity 0.35s ease;
 }
 
 #chatContainer.hidden{
-    transform:translateX(-110%);
+    clip-path: inset(0 100% 0 0); /* tutup dari kanan */
     opacity:0;
 }
 
+/* MESSAGES */
 #messages{
     flex:1;
+    min-height:0;
     overflow-y:auto;
     padding:10px;
     color:white;
     font-size:14px;
+
     display:flex;
     flex-direction:column;
-    justify-content:flex-end;
+
+    scroll-behavior:smooth;
+    -webkit-overflow-scrolling:touch;
 }
 
+/* hide scrollbar */
+#messages::-webkit-scrollbar{
+    display:none;
+}
+
+#messages{
+    scrollbar-width:none;
+    -ms-overflow-style:none;
+}
+
+/* MESSAGE BUBBLE */
 .msg{
     margin-bottom:6px;
     padding:6px 8px;
@@ -105,11 +167,17 @@ iframe{
     word-break:break-word;
 }
 
+/* INPUT AREA GLASS */
 #inputBox{
     display:flex;
+    align-items:center;
     padding:10px;
-    gap:5px;
-    background:rgba(0,0,0,0.2);
+    gap:6px;
+
+    background:rgba(255,255,255,0.05);
+    backdrop-filter:blur(18px) saturate(180%);
+    -webkit-backdrop-filter:blur(18px) saturate(180%);
+
 }
 
 input{
@@ -118,18 +186,50 @@ input{
     border:none;
     border-radius:6px;
     outline:none;
-}
 
-button{
-    padding:8px 10px;
-    border:none;
-    border-radius:6px;
-    background:#4CAF50;
+    background: rgba(255, 255, 255, 0.15);
+        backdrop-filter:blur(18px) saturate(180%);
+    -webkit-backdrop-filter:blur(18px) saturate(180%);
+
     color:white;
-    cursor:pointer;
 }
 
-/* UI */
+/* SEND BUTTON */
+#sendBtn{
+    width:42px;
+    height:42px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    border-radius:50%;
+
+    background:rgba(255,255,255,0.07);
+    backdrop-filter:blur(18px) saturate(180%);
+    -webkit-backdrop-filter:blur(18px) saturate(180%);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+        0 6px 20px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+
+    cursor:pointer;
+    padding:0;
+    transition:0.2s;
+}
+
+#sendBtn:hover{
+    transform:scale(1.08);
+    background:rgba(255,255,255,0.12);
+}
+
+#sendBtn svg{
+    width:20px;
+    height:20px;
+    fill:white;
+}
+
+/* TOP UI BUTTONS */
 #uiButtons{
     position:absolute;
     top:10px;
@@ -140,17 +240,32 @@ button{
     z-index:20;
 }
 
+/* FAB GLASS BUTTON */
 .fab{
     width:46px;
     height:46px;
     border-radius:50%;
-    border:none;
-    background:rgba(255,255,255,0.12);
-    backdrop-filter: blur(10px);
+
+    background:rgba(255,255,255,0.07);
+    backdrop-filter:blur(18px) saturate(180%);
+    -webkit-backdrop-filter:blur(18px) saturate(180%);
+
+    border:1px solid rgba(255,255,255,0.15);
+
+    box-shadow:
+        0 6px 20px rgba(0,0,0,0.35),
+        inset 0 1px 0 rgba(255,255,255,0.15);
+
     display:flex;
     justify-content:center;
     align-items:center;
     cursor:pointer;
+    transition:0.2s;
+}
+
+.fab:hover{
+    transform:scale(1.05);
+    background:rgba(255,255,255,0.12);
 }
 
 .fab svg{
@@ -159,9 +274,101 @@ button{
     fill:white;
 }
 
+/* PAGE FADE */
 body.fade-out{
     opacity:0;
     transition:opacity 0.4s ease;
+}
+
+.reaction-bubble{
+    position:fixed;
+    bottom:0;
+    font-size:32px;
+    animation: floatUp 2.5s ease-out forwards;
+    pointer-events:none;
+    z-index:99999;
+    filter: drop-shadow(0 6px 10px rgba(0,0,0,0.4));
+}
+
+@keyframes floatUp{
+    0%{
+        transform: translateY(0) scale(1);
+        opacity:1;
+    }
+    100%{
+        transform: translateY(-50vh) scale(2);
+        opacity:0;
+    }
+}
+
+#reactionBar{
+    position:absolute;
+    bottom:90px;
+    right:10px;
+
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+
+    z-index:25;
+}
+
+#reactionBar button{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(18px);
+    color:white;
+    font-size:20px;
+
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+    transition:0.2s;
+}
+
+#reactionBar button:hover{
+    transform:scale(1.1);
+    background:rgba(255,255,255,0.15);
+}
+
+#reactionToggle{
+    width:46px;
+    height:46px;
+    border-radius:50%;
+    border:none;
+    cursor:pointer;
+
+    background:rgba(255,255,255,0.08);
+    backdrop-filter:blur(18px);
+    color:white;
+
+    font-size:10px; /* kecilkan */
+    line-height:1;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    transition:0.2s;
+    box-shadow:0 6px 20px rgba(0,0,0,0.3);
+
+    text-align:center;
+}
+
+#reactionToggle.off{
+    background:rgba(255, 80, 80, 0.25);
+    color:#ffb3b3;
+}
+
+#reactionToggle:hover{
+    transform:scale(1.1);
+}
+
+#reactionBar button:disabled{
+    filter: grayscale(1);
 }
 </style>
 </head>
@@ -196,8 +403,14 @@ body.fade-out{
         </button>
     </div>
 
-</div>  
+</div>
 
+<div id="reactionBar">
+    <button id="btnLove" onclick="sendReaction('love')">❤️</button>
+    <button id="btnCry" onclick="sendReaction('cry')">😭</button>
+    <button id="btnLike" onclick="sendReaction('like')">👍</button>
+
+    <button id="reactionToggle" onclick="toggleReactions()">on</button>
 </div>
 
 <div id="liveContainer">
@@ -207,11 +420,19 @@ body.fade-out{
 
 <div id="chatContainer" class="hidden">
     <div id="messages"></div>
+
     <div id="inputBox">
-        <input id="msgInput" placeholder="Tanya soalan..." maxlength="300">
-        <button onclick="sendMsg()">Hantar</button>
+        <input id="msgInput" maxlength="300">
+
+        <button id="sendBtn" onclick="sendMsg()">
+            <svg viewBox="0 0 24 24">
+                <path d="M2 21l21-9L2 3v7l15 2-15 2z"/>
+            </svg>
+        </button>
     </div>
 </div>
+
+
 
 <script type="module">
 
@@ -228,6 +449,8 @@ import {
   orderBy,
   limit
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+import { deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 /* FIREBASE */
 const firebaseConfig = {
@@ -260,6 +483,56 @@ let chatStarted = false;
 let lastSendTime = 0;
 
 const COOLDOWN = 10000;
+
+let reactionTimestamps = [];
+const REACTION_LIMIT = 10;
+const REACTION_WINDOW = 10000; // 10 saat
+
+
+let isInitialLoad = true;
+
+const reactionButtons = [
+    document.getElementById("btnLove"),
+    document.getElementById("btnCry"),
+    document.getElementById("btnLike")
+];
+
+let showReactions = JSON.parse(localStorage.getItem("showReactions") ?? "true");
+
+function updateReactionUI(){
+    const toggleBtn = document.getElementById("reactionToggle");
+
+    toggleBtn.innerText = showReactions ? "on" : "off";
+    toggleBtn.classList.toggle("off", !showReactions);
+
+    reactionButtons.forEach(btn => {
+        btn.disabled = !showReactions;
+        btn.style.opacity = showReactions ? "1" : "0.3";
+    });
+}
+
+function toggleReactions(){
+    showReactions = !showReactions;
+    localStorage.setItem("showReactions", JSON.stringify(showReactions));
+
+    updateReactionUI();
+
+}
+window.toggleReactions = toggleReactions;
+
+function canSendReaction(){
+    const now = Date.now();
+
+    // buang yang lebih 10 saat
+    reactionTimestamps = reactionTimestamps.filter(t => now - t < REACTION_WINDOW);
+
+    if(reactionTimestamps.length >= REACTION_LIMIT){
+        return false;
+    }
+
+    reactionTimestamps.push(now);
+    return true;
+}
 
 /* LOAD LIVE FROM FIRESTORE */
 async function loadLive(){
@@ -307,6 +580,91 @@ console.log("SNAP DATA:", snap.data());
 console.log("YOUTUBE ID:", snap.data()?.youtubeId);
 }
 
+window.sendReaction = async (type) => {
+
+    if(!canSendReaction()){
+        alert("You're sending reactions a bit too fast. Take a short break 🙂");
+        return;
+    }
+
+    await addDoc(collection(db, "reactions_live"), {
+        type,
+        createdAt: serverTimestamp()
+    });
+};
+
+const reactionMap = {
+    love: "❤️",
+    cry: "😭",
+    like: "👍"
+};
+
+function spawnReactionBubble(type){
+
+    if(!showReactions) return; // ⛔ user off, tak nampak apa-apa
+
+    const bubble = document.createElement("div");
+    bubble.className = "reaction-bubble";
+
+    bubble.innerText = reactionMap[type] || "❤️";
+
+    bubble.style.left = Math.random() * 90 + "vw";
+
+    document.body.appendChild(bubble);
+
+    setTimeout(() => {
+        bubble.remove();
+    }, 2500);
+}
+
+function listenReactions(){
+
+    const q = query(
+        collection(db, "reactions_live"),
+        orderBy("createdAt", "desc"),
+        limit(20)
+    );
+
+    onSnapshot(q, (snapshot) => {
+
+        if(isInitialLoad){
+            isInitialLoad = false;
+            return; // ⛔ jangan render data lama masa first load
+        }
+
+        snapshot.docChanges().forEach((change) => {
+            if(change.type === "added"){
+                spawnReactionBubble(change.doc.data().type);
+            }
+        });
+    });
+}   
+
+async function cleanupReactions(){
+    const q = query(
+        collection(db, "reactions_live"),
+        orderBy("createdAt", "desc"),
+        limit(50)
+    );
+
+    onSnapshot(q, (snapshot) => {
+
+        snapshot.docChanges().forEach(async (change) => {
+
+            if(change.type === "added"){
+
+                // spawn bubble
+                spawnReactionBubble(change.doc.data().type);
+
+                // auto delete lepas trigger
+                setTimeout(async () => {
+                    await deleteDoc(change.doc.ref);
+                }, 3000);
+            }
+        });
+    });
+}
+
 /* AUTH CHECK */
 onAuthStateChanged(auth, async (user) => {
 
@@ -325,8 +683,9 @@ onAuthStateChanged(auth, async (user) => {
         liveContainer.style.display = "block";
         startOverlay.style.display = "flex";
 
-        loadLive();
-        listenChat(); // 🔥 start realtime chat
+loadLive();
+listenChat();
+listenReactions();
     } 
     else {
         startOverlay.innerHTML = "<div id='startBox'>Please sign in to continue</div>";
@@ -347,7 +706,7 @@ startOverlay.addEventListener("click", () => {
 
     blockTimer = setTimeout(() => {
         blockOverlay.style.display = "block";
-    }, 10000);
+    }, 2000);
 
 });
 
@@ -396,6 +755,7 @@ async function sendMsg(){
     input.value = "";
 }
 
+
 function listenChat(){
 
     if(chatStarted) return;
@@ -403,8 +763,8 @@ function listenChat(){
 
     const q = query(
         collection(db, "chats"),
-        orderBy("createdAt", "asc"),
-        limit(50)
+        orderBy("createdAt", "desc"),
+        limit(20)
     );
 
     onSnapshot(q, (snapshot) => {
@@ -412,24 +772,50 @@ function listenChat(){
         const box = document.getElementById("messages");
         box.innerHTML = "";
 
+        const msgs = [];
+
         snapshot.forEach((docSnap) => {
-
-            const data = docSnap.data();
-
-            const div = document.createElement("div");
-            div.className = "msg";
-
-            // highlight announcement
-            if(data.type === "announcement"){
-                div.style.background = "#ffcc00";
-                div.style.color = "#000";
-                div.style.fontWeight = "bold";
-            }
-
-            div.innerText = `${data.name}: ${data.message}`;
-
-            box.appendChild(div);
+            msgs.push(docSnap.data());
         });
+
+        // reverse supaya oldest → newest dalam UI
+        msgs.reverse();
+
+msgs.forEach((data) => {
+
+    const div = document.createElement("div");
+    div.className = "msg";
+
+    if(data.type === "announcement"){
+        div.style.background = "#ffcc00";
+        div.style.color = "#000";
+        div.style.fontWeight = "bold";
+    }
+
+    // format masa
+    let timeText = "";
+    if(data.createdAt){
+        const date = data.createdAt.toDate();
+        timeText = date.toLocaleTimeString([], {
+            hour: "2-digit",
+            minute: "2-digit"
+        });
+    }
+
+div.innerHTML = `
+<div style="display:flex; flex-direction:column; gap:2px;">
+    <div>${data.name}: ${data.message}</div>
+    <div style="
+        align-self:flex-end;
+        font-size:8px;
+        opacity:0.6;
+    ">
+        ${timeText}
+    </div>
+</div>
+`;
+    box.appendChild(div);
+});
 
         box.scrollTop = box.scrollHeight;
     });
@@ -450,13 +836,6 @@ function canSendMessage(){
     return true;
 }
 
-function goHome(){
-    document.body.classList.add("fade-out");
-
-    setTimeout(() => {
-        window.location.href = "index.html";
-    }, 400);
-}
 
 window.sendMsg = sendMsg;
 
