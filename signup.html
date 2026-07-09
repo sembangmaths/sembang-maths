@@ -2,269 +2,128 @@
 <html lang="ms">
 
 <head>
-
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
 <title>Sign Up - Sembang Maths</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
-
 <link rel="stylesheet" href="login.css">
-
 </head>
-
 
 <body>
 
-
 <div class="close-btn" onclick="window.location.href='login.html'">
-
-<span class="material-symbols-rounded">
-close
-</span>
-
+<span class="material-symbols-rounded">close</span>
 </div>
 
-
-
 <div class="login-box">
-
 
 <div class="title">
 Sembang Maths
 </div>
 
-
 <div class="input-box">
-
 <label>Name</label>
-
 <input type="text" id="name" placeholder="Enter name">
-
 </div>
 
-
-
 <div class="input-box">
-
 <label>Email</label>
-
 <input type="email" placeholder="Enter email">
-
 </div>
-
-
 
 <div class="input-box">
-
 <label>Password</label>
-
 <input type="password" placeholder="Create password">
-
 </div>
 
-
-
-<button onclick="signup()">
-SIGN UP
-</button>
-
-
+<button onclick="signup()">SIGN UP</button>
 
 <div class="small-text">
-
 Already have account?
-
 <span class="link" onclick="window.location.href='login.html'">
 Login
 </span>
-
 </div>
 
-
-
 </div>
-
-
 
 <script type="module">
 
-
-import { initializeApp } from 
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 
 import {
-
 getAuth,
 createUserWithEmailAndPassword,
 updateProfile
-
-} from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
-
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
 import {
-
 getFirestore,
 doc,
 setDoc
-
-} from
-"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
-
-
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
 
 const firebaseConfig = {
-
 apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
-
 authDomain: "sembang-maths.firebaseapp.com",
-
 projectId: "sembang-maths",
-
 storageBucket: "sembang-maths.firebasestorage.app",
-
 messagingSenderId: "949561490562",
-
 appId: "1:949561490562:web:0adfde880f6de95c03489b"
-
 };
 
-
-
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
-
 const db = getFirestore(app);
 
 
-
-
-window.signup = function(){
+window.signup = async function () {
 
 const name = document.getElementById("name").value;
 const email = document.querySelector("input[type=email]").value;
 const password = document.querySelector("input[type=password]").value;
 
-if(name==="" || email==="" || password===""){
-
+if (!name || !email || !password) {
 alert("Sila isi semua maklumat");
-
 return;
-
 }
 
-createUserWithEmailAndPassword(auth,email,password)
+try {
 
-.then(async (userCredential)=>{
-
-
+const userCredential = await createUserWithEmailAndPassword(auth, email, password);
 const user = userCredential.user;
 
-
-// simpan nama dalam Firebase Auth
-await updateProfile(user,{
-
-displayName:name
-
+await updateProfile(user, {
+displayName: name
 });
 
+await setDoc(doc(db, "users", user.uid), {
+uid: user.uid,
+name: name,
+email: email,
+signupDate: new Date(),
+lastLogin: new Date(),
 
-
-// simpan data dalam Firestore
-await setDoc(doc(db,"users",user.uid),{
-
-
-uid:user.uid,
-
-name:name,
-
-email:email,
-
-
-signupDate:new Date(),
-
-
-lastLogin:new Date(),
-
-
-access:{
-
-
-form4_chapter1_functions:false,
-
-form4_chapter2_quadratic_functions:false,
-
-form4_chapter3_systems_of_equations:false,
-
-form4_chapter4_indices_surds_logarithms:false,
-
-form4_chapter5_progressions:false,
-
-form4_chapter6_linear_law:false,
-
-form4_chapter7_coordinate_geometry:false,
-
-form4_chapter8_vectors:false,
-
-form4_chapter9_solutions_of_triangles:false,
-
-
-
-form5_chapter1_circular_measure:false,
-
-form5_chapter2_differentiation:false,
-
-form5_chapter3_integration:false,
-
-form5_chapter4_permutation_combination:false,
-
-form5_chapter5_probability_distribution:false,
-
-form5_chapter6_trigonometric_functions:false,
-
-form5_chapter7_linear_programming:false,
-
-form5_chapter8_kinematics:false
-
-
+access: {
+unlocked: []
 }
-
-
 });
-
-
-
-})
-
-
-.then(()=>{
-
 
 alert("Pendaftaran berjaya!");
+window.location.href = "index.html";
 
-window.location.href="index.html";
-
-
-})
-
-.catch((error)=>{
-
-alert("Signup gagal: "+error.message);
-
-});
-
+} catch (error) {
+alert("Signup gagal: " + error.message);
 }
 
-
+}
 
 </script>
 
+<script src="preload.js"></script>
 
 </body>
-
 </html>

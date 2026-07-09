@@ -98,7 +98,7 @@ content = `
 <div class="hero-card">
     <div class="hero-badge">Matematik Tambahan</div>
 
-    <h1>Belajar Dengan Lebih Mudah.</h1>
+    <h1>Belajar Dengan Lebih Mudah</h1>
 
     <p>Nota, video dan latihan dalam satu tempat.</p>
 
@@ -147,6 +147,63 @@ closeSidebar();
 }
 
 showPage("home");
+
+
+// ===============================
+// BACKGROUND PRELOAD
+// ===============================
+
+preloadData();
+
+
+
+async function preloadData(){
+
+    const cache = localStorage.getItem("pdfData");
+
+
+    if(cache){
+
+        console.log("PDF guna cache");
+
+        return;
+    }
+
+
+    try{
+
+        const url =
+        "https://script.google.com/macros/s/AKfycbxA1tFgvgFu7RBTFb-zoE9CIF06JW5t6X4d3VGyws62yJxHewGuLnyjGJj2pB-naaFM/exec";
+
+
+        const response = await fetch(url);
+
+
+        const data = await response.json();
+
+
+        localStorage.setItem(
+            "pdfData",
+            JSON.stringify(data)
+        );
+
+
+        console.log(
+            "PDF cache siap:",
+            data.length
+        );
+
+
+    }catch(error){
+
+        console.log(
+            "Preload gagal",
+            error
+        );
+
+    }
+
+}
 </script>
 
 <script type="module">
@@ -181,6 +238,7 @@ window.checkProfile = function(){
     window.location.href = window.userLogged ? "profile.html" : "login.html";
 }
 </script>
+
 
 </body>
 </html>

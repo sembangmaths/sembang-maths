@@ -373,10 +373,31 @@ body.fade-out{
     filter: grayscale(1);
 }
 
+#toast{
+    position:fixed;
+    bottom:30px;
+    left:50%;
+    transform:translateX(-50%);
+    background:rgba(0,0,0,.8);
+    color:#fff;
+    padding:12px 18px;
+    border-radius:10px;
+    opacity:0;
+    transition:.3s;
+    pointer-events:none;
+    z-index:999999;
+}
+
+#toast.show{
+    opacity:1;
+}
+
 </style>
 </head>
 
 <body>
+
+<div id="toast"></div>
 
 <div id="startOverlay">
     <div id="startBox">▶</div>
@@ -588,7 +609,7 @@ async function loadLive(){
 window.sendReaction = async (type) => {
 
     if(!canSendReaction()){
-        alert("You're sending reactions a bit too fast. Take a short break 🙂");
+        showToast("You're sending reactions a bit too fast.");
         return;
     }
 
@@ -643,7 +664,22 @@ function listenReactions(){
             }
         });
     });
-}   
+} 
+
+function showToast(text){
+
+    const t=document.getElementById("toast");
+
+    t.textContent=text;
+    t.classList.add("show");
+
+    clearTimeout(t.timer);
+
+    t.timer=setTimeout(()=>{
+        t.classList.remove("show");
+    },2500);
+
+}
 
 
 /* AUTH CHECK */
@@ -818,12 +854,12 @@ function canSendMessage(){
     const now = Date.now();
     const remaining = COOLDOWN - (now - lastSendTime);
 
-    if(remaining > 0){
-        alert(`Please wait ${Math.ceil(remaining/1000)} seconds before sending your next message.`);
-        return false;
-    }
+if(remaining > 0){
+    showToast(`Please wait ${Math.ceil(remaining/1000)} seconds before sending your next message.`);
+    return false;
+}
 
-    lastSendTime = now;
+    lastSendTime = now; 
     return true;
 }
 
@@ -858,6 +894,8 @@ document.addEventListener("keydown", function(e){
 
 
 </script>
+
+<script src="preload.js"></script>
 
 </body>
 </html>

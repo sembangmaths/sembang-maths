@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Upload Video</title>
+</head>
+
+<body>
+
+
+<button onclick="uploadVideos()">
+Upload Video
+</button>
+
+
+
+<script type="module">
+
+import { initializeApp }
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+
+
+import { 
+getFirestore,
+doc,
+setDoc
+}
+from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+
+
+const firebaseConfig = {
+
+apiKey: "AIzaSyCM7AcvKL5-rTm4kISFjU1GLE2IGU2stUM",
+authDomain:"sembang-maths.firebaseapp.com",
+projectId:"sembang-maths",
+storageBucket:"sembang-maths.firebasestorage.app",
+messagingSenderId:"949561490562",
+appId:"1:949561490562:web:0adfde880f6de95c03489b"
+
+};
+
+
+
+const app = initializeApp(firebaseConfig);
+
+const db = getFirestore(app);
+
+
+
+async function uploadVideos(){
+
+
+const videoIDs = [
+
+"ei_Th8jXN94",
+"p05ywkc2_k8",
+"3qWk-D7BEm8",
+"mW8CXR6cQ8M",
+"-c8biCI4a88",
+"0z_5uPfwylo",
+"fAxaUYR4Y3w",
+"gOGavSB7zY0",
+"Rpk5dpbgppw",
+"26atxI-VhGM",
+"ToXrOxPT874",
+"SX30w4AuQWg",
+"Fv83psPo4nY",
+"8fISEmdBv_4",
+"S0wIlMP9X9Y",
+"3X3zPOsqz8Q",
+"6dszbftMqUs",
+"tjpZfYFUxa0",
+"-yJ2-sIgkEY",
+"Bu8rP-1QfIw",
+"dnKjWvGErTA",
+"YOKLI0EMRaQ",
+"IIxKT2Kw72c",
+"aQofOBtd12E",
+"Z9mcXqzp-Io",
+"GoivABRcVgs",
+"V_Hv0GzWdl4",
+"XLuVGsL6GWQ",
+"xrbDWWtROyo",
+"DtvZa84xDe8",
+"GAM5sj328P4",
+"STynRzplps8"
+
+];
+
+
+
+await setDoc(
+
+doc(
+db,
+"videos",
+"form4_chapter1_functions"
+),
+
+{
+
+2024: videoIDs
+
+},
+
+{
+merge:true
+}
+
+);
+
+
+
+alert("Berjaya upload!");
+
+}
+
+
+
+window.uploadVideos = uploadVideos;
+
+
+</script>
+
+
+</body>
+
+<script src="preload.js"></script>
+
+</html>
