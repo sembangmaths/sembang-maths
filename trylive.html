@@ -783,7 +783,6 @@ listenReactions();
 });     
 
 /* START */
-/* START */
 startOverlay.addEventListener("click", () => {
 
     if(!youtubeReady){
@@ -794,9 +793,11 @@ startOverlay.addEventListener("click", () => {
 
     if(blockTimer) clearTimeout(blockTimer);
 
-    const delay = /Mobi|Android/i.test(navigator.userAgent)
-        ? 1500
-        : 100;
+    const isTouchDevice = /Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+
+    const delay = isTouchDevice
+        ? 1500   // phone, tablet, iPad
+        : 100;   // laptop / desktop
 
     blockTimer = setTimeout(() => {
         blockOverlay.style.display = "block";
