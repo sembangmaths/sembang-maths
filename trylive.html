@@ -783,21 +783,24 @@ listenReactions();
 });     
 
 /* START */
+/* START */
 startOverlay.addEventListener("click", () => {
-
 
     if(!youtubeReady){
         return; // masih loading
     }
 
-
     startOverlay.style.display = "none";
 
     if(blockTimer) clearTimeout(blockTimer);
 
+    const delay = /Mobi|Android/i.test(navigator.userAgent)
+        ? 1500
+        : 100;
+
     blockTimer = setTimeout(() => {
         blockOverlay.style.display = "block";
-    }, 500);
+    }, delay);
 
 });
 
