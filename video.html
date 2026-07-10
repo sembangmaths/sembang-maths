@@ -3,10 +3,24 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
 <title>Sembang Maths</title>
 
-<link rel="stylesheet" href="video.css">
+<!-- FAVICON (browser tab icon) -->
+<link rel="icon" type="image/png" href="icon-192.png">
+
+<!-- APPLE ICON (iPhone home screen) -->
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- PWA MANIFEST -->
+<link rel="manifest" href="manifest.json">
+
+<!-- ICON FONT -->
 <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+<link rel="stylesheet" href="video.css">
+
+<meta name="theme-color" content="#111111">
 
 </head>
 
@@ -573,6 +587,24 @@ year
 
 
 ;
+
+// Disable right click
+document.addEventListener("contextmenu", e => {
+    e.preventDefault();
+});
+
+// Disable F12, Ctrl+Shift+I, Ctrl+Shift+J, Ctrl+U
+document.addEventListener("keydown", e => {
+
+    if (
+        e.key === "F12" ||
+        (e.ctrlKey && e.shiftKey && ["I","J","C"].includes(e.key.toUpperCase())) ||
+        (e.ctrlKey && e.key.toUpperCase() === "U")
+    ) {
+        e.preventDefault();
+    }
+
+});
 
 </script>
 

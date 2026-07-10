@@ -2,8 +2,23 @@
 <html lang="ms">
 <head>
 <meta charset="UTF-8">
-<title>Live Class</title>
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+
+<title>Sembang Maths</title>
+
+<!-- FAVICON (browser tab icon) -->
+<link rel="icon" type="image/png" href="icon-192.png">
+
+<!-- APPLE ICON (iPhone home screen) -->
+<link rel="apple-touch-icon" href="icon-192.png">
+
+<!-- PWA MANIFEST -->
+<link rel="manifest" href="manifest.json">
+
+<!-- ICON FONT -->
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+
+<meta name="theme-color" content="#111111">
 
 <style>
 body{
@@ -81,6 +96,14 @@ iframe{
     color:white;
         mix-blend-mode: normal;
     filter: saturate(1) contrast(1);
+}
+
+#startBox{
+    padding:15px 25px;
+}
+
+#startBox .material-symbols-rounded{
+    line-height:1;
 }
 
 #startBox:hover{
@@ -401,6 +424,20 @@ body.fade-out{
     opacity:1;
 }
 
+.loading{
+    font-size:40px;
+    animation:spin 1s linear infinite;
+}
+
+@keyframes spin{
+    from{
+        transform:rotate(0deg);
+    }
+    to{
+        transform:rotate(360deg);
+    }
+}
+
 </style>
 </head>
 
@@ -409,7 +446,11 @@ body.fade-out{
 <div id="toast"></div>
 
 <div id="startOverlay">
-    <div id="startBox">▶</div>
+    <div id="startBox">
+        <span class="material-symbols-rounded loading">
+            progress_activity
+        </span>
+    </div>
 </div>
 
 <div id="uiButtons">
@@ -509,6 +550,7 @@ const blockOverlay = document.getElementById("blockOverlay");
 const yt = document.getElementById("yt");
 
 /* STATE */
+let youtubeReady = false;
 let blockTimer = null;
 
 let currentUserName = "Student";
@@ -596,6 +638,27 @@ async function loadLive(){
             return;
         }
 
+
+        // YOUTUBE READY
+        youtubeReady = true;
+
+
+        const startBox = document.getElementById("startBox");
+
+        startBox.innerHTML = `
+            <div style="display:flex; flex-direction:column; align-items:center; gap:5px;">
+                <span class="material-symbols-rounded" style="font-size:50px;">
+                    play_circle
+                </span>
+
+                <span style="font-size:14px; font-weight:normal;">
+                    Double click
+                </span>
+            </div>
+        `;
+
+        startBox.style.cursor="pointer";
+
         const iframe = document.getElementById("yt");
 
         const url = `https://www.youtube.com/embed/${youtubeId}?autoplay=1&playsinline=1`;
@@ -603,11 +666,7 @@ async function loadLive(){
         console.log("▶ Loading:", url);
 
         // FORCE RESET supaya iframe render semula
-        iframe.src = "";
-        
-        setTimeout(() => {
-            iframe.src = url;
-        }, 200);
+        iframe.src = url;
 
     } catch (err){
         console.error("🔥 Firestore error:", err);
@@ -726,13 +785,19 @@ listenReactions();
 /* START */
 startOverlay.addEventListener("click", () => {
 
+
+    if(!youtubeReady){
+        return; // masih loading
+    }
+
+
     startOverlay.style.display = "none";
 
     if(blockTimer) clearTimeout(blockTimer);
 
     blockTimer = setTimeout(() => {
         blockOverlay.style.display = "block";
-    }, 2000);
+    }, 100);
 
 });
 
@@ -747,17 +812,32 @@ document.getElementById("homeBtn").onclick = () => {
 /* REFRESH */
 document.getElementById("refreshBtn").onclick = () => {
 
-    const current = yt.src;
+
     yt.src = "";
 
-    setTimeout(() => {
-        yt.src = current;
-    }, 200);
+
+    youtubeReady = false;
+
+
+    document.getElementById("startBox").innerHTML = `
+    <span class="material-symbols-rounded loading">
+        progress_activity
+    </span>
+    `;
+
 
     blockOverlay.style.display = "none";
     startOverlay.style.display = "flex";
 
+
     if(blockTimer) clearTimeout(blockTimer);
+
+
+
+    // ambil semula youtubeId dari Firestore
+    loadLive();
+
+
 };
 
 /* CHAT */
