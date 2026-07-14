@@ -173,7 +173,7 @@ animation:wipeIn 1s ease;
 /* UPLOAD BOX */
 
 .upload-box{
-background:linear-gradient(135deg,#fff,#fff8f0);
+background: #ffffff;;
 padding:10px 25px 10px 25px;
 border-radius:22px;
 box-shadow:0 10px 30px rgba(122,18,48,.08);
