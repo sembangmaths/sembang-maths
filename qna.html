@@ -68,11 +68,27 @@
 Have a Question?
 </h2>
 
+
 <div class="upload-box">
 
-<span class="material-symbols-rounded">
-add_photo_alternate
-</span>
+    <p>
+Muat naik soalan AddMath KSSM anda dan dapatkan bantuan daripada komuniti. / 
+<i>Upload your AddMath KSSM question and get help from the community.</i>
+</p>
+
+<p>
+<b>Pastikan gambar:</b>
+<br>
+✓ Soalan lengkap / 
+<i>Complete question</i>
+<br>
+✓ Rajah dan graf (jika ada) / 
+<i>Diagrams and graphs (if any)</i>
+<br>
+✓ Markah diperuntukkan / 
+<i>Marks allocated</i>
+</p>
+
 
 <input
 type="text"
@@ -92,22 +108,32 @@ Post
 
 </div>
 
-<h2 class="page-title">
+
+
+
+<div class="tab-container">
+
+<button class="tab active" id="communityTab">
 Community Questions
-</h2>
+</button>
+
+<button class="tab" id="myQATab">
+My Q&A
+</button>
 
 <input
 type="text"
 id="searchQuestion"
-placeholder="Search question title...">
+placeholder="Search...">
+</div>
+
+
 
 
 <div id="questionList">
 
 <div class="loading">
 Loading...
-</div>
-
 </div>
 
 </div>
@@ -277,6 +303,7 @@ onAuthStateChanged(auth,(user)=>{
     console.log("Auth Ready:", authReady);
     console.log("Current User:", currentUser);
 
+
 });
 
 
@@ -305,6 +332,12 @@ window.checkProfile = function(){
 }
 
 let allQuestions=[];
+let myQA=[];
+
+let communityLoaded=false;
+let myQALoaded=false;
+
+let currentTab="community";
 
 
 // ===============================
@@ -458,8 +491,9 @@ return;
 }
 
 if(!currentUser){
-alert("Please login first.");
-return;
+    alert("Please login first.");
+    window.location.href="login.html";
+    return;
 }
 
 
@@ -552,12 +586,11 @@ alert(error.message);
 // LOAD QUESTIONS
 // ===============================
 
-function displayQuestions(questions){
+function displayQuestions(questions,containerId){
 
-const list=document.getElementById("questionList");
+const list=document.getElementById(containerId);
 
 list.innerHTML="";
-
 
 if(questions.length===0){
 
@@ -567,17 +600,16 @@ return;
 
 }
 
+let html="";
 
 questions.forEach((item)=>{
 
 const data=item.data;
 
-
-list.innerHTML+=`
+html+=`
 
 <div class="qna-card"
 onclick="openPreview('${item.id}')">
-
 
 <div class="qna-icon">
 
@@ -585,14 +617,11 @@ onclick="openPreview('${item.id}')">
 
 </div>
 
-
 <div class="qna-info">
-
 
 <div class="qna-title">
 ${data.title}
 </div>
-
 
 <div class="status ${data.hasAnswer ? "answered" : "not-answered"}">
 
@@ -600,9 +629,7 @@ ${data.hasAnswer ? "Answered" : "Unanswered"}
 
 </div>
 
-
 </div>
-
 
 </div>
 
@@ -610,13 +637,21 @@ ${data.hasAnswer ? "Answered" : "Unanswered"}
 
 });
 
+list.innerHTML=html;
+
 }
+
 
 async function loadQuestions(){
 
 const list=document.getElementById("questionList");
 
-list.innerHTML="Loading...";
+list.innerHTML=
+`
+<div class="loading">
+Loading...
+</div>
+`;
 
 
 try{
@@ -662,7 +697,9 @@ return;
 
 }
 
-displayQuestions(allQuestions);
+displayQuestions(allQuestions,"questionList");
+
+communityLoaded=true;
 
 
 }
@@ -765,11 +802,9 @@ class="answer-image">
 window.answerQuestion=()=>{
 
 if(!currentUser){
-
-alert("Please login first.");
-
-return;
-
+    alert("Please login first.");
+    window.location.href="login.html";
+    return;
 }
 
 
@@ -966,7 +1001,21 @@ const keyword=e.target.value
 
 if(keyword===""){
 
-displayQuestions(allQuestions);
+if(currentTab==="community"){
+
+displayQuestions(
+allQuestions,
+"questionList"
+);
+
+}else{
+
+displayQuestions(
+myQA,
+"questionList"
+);
+
+}
 
 return;
 
@@ -984,11 +1033,209 @@ return title
 });
 
 
-displayQuestions(filtered);
+displayQuestions(filtered,"questionList");
 
 });
 
 loadQuestions();
+
+async function loadMyQA(){
+
+if(myQALoaded){
+    displayQuestions(myQA,"questionList");
+    return;
+}
+
+
+
+let combined=[];
+
+
+// ============================
+// SOALAN YANG USER POST
+// ============================
+
+const questionQuery=query(
+collection(db,"questions"),
+where("userId","==",currentUser.uid),
+where("visibility","==",true)
+);
+
+
+const questionSnap=await getDocs(questionQuery);
+
+
+questionSnap.forEach((item)=>{
+
+combined.push({
+
+id:item.id,
+data:item.data()
+
+});
+
+});
+
+
+
+// ============================
+// SOALAN YANG USER JAWAB
+// ============================
+
+const answerQuery=query(
+collection(db,"answers"),
+where("answeredBy","==",currentUser.uid),
+where("visibility","==",true)
+);
+
+
+const answerSnap=await getDocs(answerQuery);
+
+
+
+for(const answerDoc of answerSnap.docs){
+
+
+const answerData=answerDoc.data();
+
+
+const questionSnap=await getDoc(
+doc(db,"questions",answerData.questionId)
+);
+
+
+
+if(
+    questionSnap.exists()
+    && questionSnap.data().visibility === true
+){
+
+
+combined.push({
+
+id:questionSnap.id,
+data:questionSnap.data()
+
+});
+
+
+}
+
+
+}
+
+
+
+// buang duplicate
+
+const unique=[];
+
+const ids=new Set();
+
+
+combined.forEach(item=>{
+
+if(!ids.has(item.id)){
+
+ids.add(item.id);
+
+unique.push(item);
+
+}
+
+});
+
+
+
+myQA=unique;
+
+
+myQA.sort((a,b)=>{
+    return b.data.createdAt?.seconds - a.data.createdAt?.seconds;
+});
+
+
+displayQuestions(myQA,"questionList");
+
+
+myQALoaded=true;
+
+
+}
+
+document.getElementById("communityTab").onclick=()=>{
+
+currentTab="community";
+
+document.getElementById("communityTab")
+.classList.add("active");
+
+document.getElementById("myQATab")
+.classList.remove("active");
+
+
+if(communityLoaded){
+
+displayQuestions(allQuestions,"questionList");
+
+}else{
+
+loadQuestions();
+
+}
+
+};
+
+
+
+document.getElementById("myQATab").onclick=()=>{
+
+
+if(!authReady){
+    alert("Please wait...");
+    return;
+}
+
+
+if(!currentUser){
+
+    alert("Please login first.");
+    window.location.href="login.html";
+
+    return;
+
+}
+
+
+currentTab="myqa";
+
+
+document.getElementById("myQATab")
+.classList.add("active");
+
+document.getElementById("communityTab")
+.classList.remove("active");
+
+
+if(myQALoaded){
+
+    displayQuestions(myQA,"questionList");
+
+}else{
+
+    document.getElementById("questionList").innerHTML=
+    `
+    <div class="loading">
+    Loading...
+    </div>
+    `;
+
+
+    loadMyQA();
+
+}
+
+};
 
 </script>
 
