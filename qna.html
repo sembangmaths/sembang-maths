@@ -138,6 +138,8 @@ Loading...
 
 </div>
 
+<div id="loadMoreTrigger" style="height:50px;"></div>
+
 
 <div id="previewModal">
 
@@ -251,6 +253,7 @@ query,
 where,
 orderBy,
 limit,
+startAfter,
 serverTimestamp
 }
 from
@@ -333,6 +336,12 @@ window.checkProfile = function(){
 
 let allQuestions=[];
 let myQA=[];
+
+const PAGE_SIZE = 20;
+
+let lastQuestionDoc = null;
+let loadingMore = false;
+let noMoreQuestions = false;
 
 let communityLoaded=false;
 let myQALoaded=false;
@@ -586,11 +595,10 @@ alert(error.message);
 // LOAD QUESTIONS
 // ===============================
 
-function displayQuestions(questions,containerId){
+function displayQuestions(questions,containerId,append=false){
 
 const list=document.getElementById(containerId);
 
-list.innerHTML="";
 
 if(questions.length===0){
 
@@ -600,11 +608,14 @@ return;
 
 }
 
+
 let html="";
+
 
 questions.forEach((item)=>{
 
 const data=item.data;
+
 
 html+=`
 
@@ -637,36 +648,35 @@ ${data.hasAnswer ? "Answered" : "Unanswered"}
 
 });
 
+
+if(append){
+
+list.insertAdjacentHTML(
+"beforeend",
+html
+);
+
+}else{
+
 list.innerHTML=html;
 
 }
 
 
+}
+
 async function loadQuestions(){
 
-const list=document.getElementById("questionList");
+if(communityLoaded){
+    displayQuestions(allQuestions,"questionList");
+    return;
+}
 
-list.innerHTML=
-`
-<div class="loading">
-Loading...
-</div>
-`;
-
-
-try{
-
-
-const q = query(
-
-    collection(db,"questions"),
-
-    where("visibility","==",true),
-
-    orderBy("createdAt","desc"),
-
-    limit(200)
-
+const q=query(
+collection(db,"questions"),
+where("visibility","==",true),
+orderBy("createdAt","desc"),
+limit(PAGE_SIZE)
 );
 
 
@@ -679,37 +689,133 @@ allQuestions=[];
 snapshot.forEach((item)=>{
 
 allQuestions.push({
-
 id:item.id,
-
 data:item.data()
-
 });
 
 });
 
 
-if(snapshot.empty){
+if(snapshot.docs.length){
 
-list.innerHTML="No questions available";
-
-return;
+lastQuestionDoc=snapshot.docs[snapshot.docs.length-1];
 
 }
 
-displayQuestions(allQuestions,"questionList");
+
+displayQuestions(
+allQuestions,
+"questionList"
+);
+
 
 communityLoaded=true;
 
 
 }
 
+async function loadMoreQuestions(){
 
-catch(error){
+console.log("LOAD MORE START");
 
-console.log(error);
+if(loadingMore) return;
 
-list.innerHTML="Failed to load questions";
+if(noMoreQuestions) return;
+
+if(!lastQuestionDoc) return;
+
+if(!communityLoaded)return;
+
+
+loadingMore=true;
+
+
+const q=query(
+
+collection(db,"questions"),
+
+where("visibility","==",true),
+
+orderBy("createdAt","desc"),
+
+startAfter(lastQuestionDoc),
+
+limit(PAGE_SIZE)
+
+);
+
+
+
+const snapshot=await getDocs(q);
+console.log("NEW DATA:", snapshot.size);
+
+
+
+snapshot.forEach((item)=>{
+
+
+const question={
+
+id:item.id,
+
+data:item.data()
+
+};
+
+
+allQuestions.push(question);
+
+
+});
+
+
+
+if(snapshot.empty){
+
+noMoreQuestions=true;
+
+loadingMore=false;
+
+return;
+
+}
+
+
+
+lastQuestionDoc =
+snapshot.docs[snapshot.docs.length-1];
+
+
+
+if(snapshot.size < PAGE_SIZE){
+
+noMoreQuestions=true;
+
+}
+
+
+
+displayQuestions(
+allQuestions.slice(-snapshot.size),
+"questionList",
+true
+);
+
+
+loadingMore=false;
+
+
+// refresh observer
+if(observer){
+
+observer.unobserve(
+document.getElementById("loadMoreTrigger")
+);
+
+
+observer.observe(
+document.getElementById("loadMoreTrigger")
+);
 
 }
 
@@ -725,9 +831,13 @@ list.innerHTML="Failed to load questions";
 
 function showLoading(text){
 
+const overlay=document.getElementById("loadingOverlay");
+
+if(!overlay)return;
+
 document.getElementById("loadingText").innerText=text;
 
-document.getElementById("loadingOverlay").style.display="flex";
+overlay.style.display="flex";
 
 }
 
@@ -1037,7 +1147,37 @@ displayQuestions(filtered,"questionList");
 
 });
 
-loadQuestions();
+let observer;
+
+async function startQuestions(){
+
+await loadQuestions();
+
+
+observer = new IntersectionObserver((entries)=>{
+
+if(entries[0].isIntersecting){
+
+    if(currentTab==="community"){
+        loadMoreQuestions();
+    }
+
+}
+
+},{
+rootMargin:"100px"
+});
+
+
+observer.observe(
+document.getElementById("loadMoreTrigger")
+);
+
+
+}
+
+
+startQuestions();
 
 async function loadMyQA(){
 
@@ -1236,6 +1376,9 @@ if(myQALoaded){
 }
 
 };
+
+
+
 
 </script>
 
