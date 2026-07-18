@@ -438,12 +438,35 @@ body.fade-out{
     }
 }
 
+#topBlock,
+#bottomBlock{
+    position:fixed;
+    left:0;
+    width:100%;
+    background:transparent;
+    z-index:5;   /* bawah startOverlay (9999), atas semua yang lain */
+    pointer-events:auto;
+}
+
+#topBlock{
+    top:0;
+    height:43dvh;
+}
+
+#bottomBlock{
+    bottom:0;
+    height:43dvh;
+}
+
 </style>
 </head>
 
 <body>
 
 <div id="toast"></div>
+
+<div id="topBlock"></div>
+<div id="bottomBlock"></div>
 
 <div id="startOverlay">
     <div id="startBox">
