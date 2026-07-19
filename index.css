@@ -313,4 +313,152 @@ body{
     100%{opacity:1;}
 }
 
+/* ================= HOME HERO ================= */
+
+.home-hero{
+    margin:20px;
+    padding:32px 25px;
+    border-radius:28px;
+    background:#5f0e25;
+    color:white;
+    box-shadow:0 15px 40px rgba(122,18,48,.25);
+}
+
+.hero-tag{
+    display:inline-block;
+    background:rgba(255,255,255,.18);
+    padding:7px 14px;
+    border-radius:999px;
+    font-size:11px;
+    letter-spacing:1px;
+    margin-bottom:18px;
+}
+
+.home-hero h1{
+    font-size:32px;
+    line-height:1.15;
+    margin:0;
+}
+
+.home-hero p{
+    opacity:.85;
+    line-height:1.6;
+    margin-top:15px;
+}
+
+.home-hero button{
+    margin-top:20px;
+    border:none;
+    background:#f5eee4;
+    color:#7a1230;
+    padding:14px 22px;
+    border-radius:999px;
+    font-weight:600;
+    display:flex;
+    align-items:center;
+    gap:8px;
+    cursor:pointer;
+}
+
+
+/* ================= HOME TITLE ================= */
+
+.home-title{
+    font-size:18px;
+    font-weight:700;
+    margin:25px 20px 15px;
+    color:#7a1230;
+}
+
+
+/* ================= FEATURE CARD ================= */
+
+.feature-grid{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:15px;
+    padding:0 20px;
+}
+
+.feature-card{
+    position:relative;
+    background:rgba(255,255,255,.45);
+    backdrop-filter:blur(15px);
+    -webkit-backdrop-filter:blur(15px);
+    border-radius:22px;
+    padding:20px;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+    cursor:pointer;
+    transition:.25s;
+}
+
+.feature-card:hover{
+    transform:translateY(-5px);
+}
+
+.feature-card span{
+    font-size:36px;
+    color:#7a1230;
+}
+
+.feature-card h3{
+    margin:12px 0 5px;
+    font-size:16px;
+}
+
+.feature-card p{
+    font-size:12px;
+    color:#777;
+    margin:0;
+}
+
+
+/* LIVE CARD */
+
+.feature-card.live{
+    border:1px solid #ff4b4b;
+}
+
+.feature-card.live::after{
+    content:"LIVE";
+    position:absolute;
+    top:12px;
+    right:12px;
+    background:#ff3b3b;
+    color:white;
+    font-size:10px;
+    font-weight:700;
+    padding:4px 8px;
+    border-radius:999px;
+}
+
+
+/* ================= ACHIEVEMENT ================= */
+
+.achievement-card{
+    margin:25px 20px;
+    padding:20px;
+    border-radius:22px;
+    display:flex;
+    justify-content:space-around;
+    background:white;
+    box-shadow:0 8px 25px rgba(0,0,0,.08);
+}
+
+.achievement-card div{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+}
+
+.achievement-card strong{
+    font-size:22px;
+    color:#7a1230;
+}
+
+.achievement-card span{
+    font-size:12px;
+    color:#777;
+}
+
 
