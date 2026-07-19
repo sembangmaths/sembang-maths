@@ -327,7 +327,7 @@ background: transparent;
     background:#f0dde4;
     border-radius:999px;
     width:fit-content;
-    overflow:hidden;
+    overflow:visible; /* tukar sini */
     animation:wipeIn 1.5s ease;
 }
 
@@ -596,6 +596,80 @@ font-size:15px;
 width:100%;
 
 background:none;
+
+}
+
+.year-dropdown{
+position:relative;
+}
+
+
+.year-dropdown .tab{
+display:flex;
+align-items:center;
+justify-content:space-between;
+gap:25px;
+background:#7a1230;
+color:white;
+border-radius:999px;
+padding:8px 14px 8px 18px;
+min-width:90px;
+}
+
+.year-dropdown .material-symbols-rounded{
+font-size:15px;
+}
+
+
+
+.year-menu{
+
+position:absolute;
+top:45px;
+right:0;
+
+background:white;
+
+border-radius:16px;
+
+box-shadow:0 10px 30px rgba(0,0,0,.15);
+
+padding:8px;
+
+z-index:9999;
+
+min-width:100px;
+
+display:none;
+
+}
+
+
+.year-menu.show{
+
+display:block;
+
+}
+
+
+.year-menu div{
+
+padding:10px 15px;
+
+border-radius:10px;
+
+cursor:pointer;
+
+font-size:14px;
+
+color:#333;
+
+}
+
+
+.year-menu div:hover{
+
+background:#f0dde4;
 
 }
 
