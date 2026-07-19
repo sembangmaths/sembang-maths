@@ -76,6 +76,8 @@ let selectedTrial = "";
 let pdfCurrent = "";
 let allPDF = [];
 
+const PDF_CACHE_VERSION = "version 1";
+
 
 const PDF_API =
 "https://script.google.com/macros/s/AKfycbxA1tFgvgFu7RBTFb-zoE9CIF06JW5t6X4d3VGyws62yJxHewGuLnyjGJj2pB-naaFM/exec";
@@ -110,11 +112,13 @@ const trials = {
   Soalan: [
     { name: "Trial 2024", slug: "trial-2024" },
     { name: "Trial 2025", slug: "trial-2025" },
+    { name: "Trial 2026", slug: "trial-2026" },
   ],
 
   Skema: [
     { name: "Skema Trial 2024", slug: "skema-2024" },
     { name: "Skema Trial 2025", slug: "skema-2025" },
+    { name: "Skema Trial 2026", slug: "skema-2026" },
   ],
 };
 
@@ -353,31 +357,39 @@ function switchForm(type, el){
 
 async function fetchAllPDF(){
 
+    const savedVersion = localStorage.getItem("pdfVersion");
+    const cache = localStorage.getItem("pdfData");
 
-    const cache =
-    localStorage.getItem("pdfData");
 
-
-    if(cache){
+    if(cache && savedVersion === PDF_CACHE_VERSION){
 
         allPDF = JSON.parse(cache);
 
-        console.log(
-            "Guna cache:",
-            allPDF.length
-        );
+        console.log("PDF guna cache:", allPDF.length);
 
         return;
 
     }
 
 
-
     const res = await fetch(PDF_API);
-
 
     allPDF = await res.json();
 
+
+    localStorage.setItem(
+        "pdfData",
+        JSON.stringify(allPDF)
+    );
+
+
+    localStorage.setItem(
+        "pdfVersion",
+        PDF_CACHE_VERSION
+    );
+
+
+    console.log("PDF update baru:", allPDF.length);
 
 }
 
