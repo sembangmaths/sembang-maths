@@ -31,9 +31,7 @@
 <div class="sidebar" id="sidebar">
 
 <div class="sidebar-profile" onclick="checkProfile()">
-    <span class="material-symbols-rounded" id="profileIcon">
-        person
-    </span>
+    <div id="profileIcon"></div>
 </div>
 
 
@@ -284,55 +282,32 @@ let authReady=false;
 
 
 
-// CHECK LOGIN STATUS
-
 window.userLogged = false;
 
 
-onAuthStateChanged(auth,(user)=>{
+onAuthStateChanged(auth, (user)=>{
 
-    authReady = true;
-    currentUser = user;
-    window.userLogged = !!user;
+    if(user){
 
-    const icon = document.getElementById("profileIcon");
+        window.userLogged = true;
 
-    if(icon){
-        icon.textContent = user
-            ? "account_circle"
-            : "person";
+    }else{
+
+        window.userLogged = false;
+
     }
-
-    console.log("Auth Ready:", authReady);
-    console.log("Current User:", currentUser);
-
 
 });
 
 
-
-
-// PROFILE BUTTON
-
 window.checkProfile = function(){
 
-
-    if(window.userLogged){
-
-
-        window.location.href="profile.html";
-
-
-    }else{
-
-
-        window.location.href="login.html";
-
-
-    }
-
+    window.location.href = window.userLogged 
+        ? "profile.html" 
+        : "login.html";
 
 }
+
 
 let allQuestions=[];
 let myQA=[];
@@ -1382,7 +1357,7 @@ if(myQALoaded){
 
 </script>
 
-<script src="preload.js"></script>
+<script type="module" src="user-profile.js"></script>
 
 <div id="loadingOverlay">
 
