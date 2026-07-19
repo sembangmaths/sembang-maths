@@ -40,10 +40,8 @@
 
 <div class="sidebar" id="sidebar">
 
-  <div class="sidebar-profile" onclick="checkProfile()">
-    <span class="material-symbols-rounded" id="profileIcon">
-        person
-    </span>
+<div class="sidebar-profile" onclick="checkProfile()">
+    <div id="profileIcon"></div>
 </div>
   
 
@@ -72,6 +70,7 @@
 <div id="app"></div>
 
 <script>
+
 
 let currentForm = "form4";
 
@@ -627,7 +626,8 @@ from
 import {
 getFirestore,
 doc,
-getDoc
+getDoc,
+enableIndexedDbPersistence
 }
 from
 "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
@@ -652,7 +652,24 @@ const auth=getAuth(app);
 
 const db=getFirestore(app);
 
+enableIndexedDbPersistence(db)
+.catch((err)=>{
 
+if(err.code==="failed-precondition"){
+
+console.log("Multiple tabs open");
+
+}
+
+else if(err.code==="unimplemented"){
+
+console.log("Browser does not support offline cache");
+
+}
+
+});
+
+window.videoCache = {};
 
 async function loadVideos(chapterKey, year){
 
@@ -672,6 +689,23 @@ Loading video...
 
 
 
+let data;
+
+
+// CHECK MEMORY CACHE
+if(window.videoCache[chapterKey]){
+
+
+data = window.videoCache[chapterKey];
+
+
+}
+
+
+// TIADA CACHE → AMBIL FIRESTORE
+else{
+
+
 const snap = await getDoc(
     doc(
         db,
@@ -679,6 +713,7 @@ const snap = await getDoc(
         chapterKey
     )
 );
+
 
 if(!snap.exists()){
 
@@ -696,7 +731,15 @@ return;
 
 }
 
-const data = snap.data();
+
+data = snap.data();
+
+
+// SIMPAN DALAM MEMORY
+window.videoCache[chapterKey]=data;
+
+
+}
 
 const videos = data[year] || [];
 
@@ -828,44 +871,6 @@ window.userAccess={};
 
 
 
-onAuthStateChanged(auth,async(user)=>{
-
-
-if(user){
-
-
-const snap=await getDoc(
-doc(db,"users",user.uid)
-);
-
-
-if(snap.exists()){
-
-window.userAccess =
-snap.data().access || {};
-
-}
-
-
-showPage();
-
-document.getElementById("loadingScreen").style.display="none";
-
-
-}
-
-else{
-
-window.userAccess={};
-
-showPage();
-
-document.getElementById("loadingScreen").style.display="none";
-
-}
-
-
-});
 
 
 // bawah semua function
@@ -879,33 +884,51 @@ window.backToVideoRoot = backToVideoRoot;
 window.userLogged = false;
 
 
-onAuthStateChanged(auth, (user)=>{
+onAuthStateChanged(auth,async(user)=>{
 
 
-    if(user){
-
-        console.log("User login:", user.email);
-
-        window.userLogged = true;
+if(user){
 
 
-        document.getElementById("profileIcon").textContent =
-        "account_circle";
+window.userLogged = true;
 
 
-    }else{
+// ambil access user
+const snap = await getDoc(
+    doc(db,"users",user.uid)
+);
 
 
-        console.log("Belum login");
+if(snap.exists()){
 
-        window.userLogged = false;
+window.userAccess =
+snap.data().access || {};
+
+}
+else{
+
+window.userAccess={};
+
+}
 
 
-        document.getElementById("profileIcon").textContent =
-        "person";
+}
+else{
 
 
-    }
+window.userLogged = false;
+
+window.userAccess={};
+
+
+}
+
+
+// load page selepas status user siap
+showPage();
+
+
+document.getElementById("loadingScreen").style.display="none";
 
 
 });
@@ -913,25 +936,11 @@ onAuthStateChanged(auth, (user)=>{
 
 
 
-// PROFILE BUTTON
-
 window.checkProfile = function(){
 
-
-    if(window.userLogged){
-
-
-        window.location.href="profile.html";
-
-
-    }else{
-
-
-        window.location.href="login.html";
-
-
-    }
-
+    window.location.href = window.userLogged 
+        ? "profile.html" 
+        : "login.html";
 
 }
 
@@ -1004,6 +1013,8 @@ container.innerHTML=html;
 }
 
 </script>
+
+<script type="module" src="user-profile.js"></script>
 
 <div id="playerOverlay" onclick="closePlayer()">
 
