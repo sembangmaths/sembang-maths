@@ -31,7 +31,7 @@
 <div class="sidebar" id="sidebar">
 
 <div class="sidebar-profile" onclick="checkProfile()">
-    <span class="material-symbols-rounded" id="profileIcon">person</span>
+    <div id="profileIcon"></div>
 </div>
 
 <div class="menu-item active" onclick="setActive(this);showPage('home')">
@@ -224,20 +224,32 @@ const auth = getAuth(app);
 
 window.userLogged = false;
 
+
 onAuthStateChanged(auth, (user)=>{
+
     if(user){
+
         window.userLogged = true;
-        document.getElementById("profileIcon").textContent = "account_circle";
+
     }else{
+
         window.userLogged = false;
-        document.getElementById("profileIcon").textContent = "person";
+
     }
+
 });
 
+
 window.checkProfile = function(){
-    window.location.href = window.userLogged ? "profile.html" : "login.html";
+
+    window.location.href = window.userLogged 
+        ? "profile.html" 
+        : "login.html";
+
 }
 </script>
+
+<script type="module" src="user-profile.js"></script>
 
 
 </body>
