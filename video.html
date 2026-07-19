@@ -371,21 +371,43 @@ function openChapter(chapterName){
 
 
   // tukar toggle Form 4/5 kepada 2025/2024
-  tabs.innerHTML = `
+tabs.innerHTML = `
 
-    <div class="tab-slider" id="tabSlider"></div>
+<div class="year-dropdown">
 
-    <div class="tab active"
-    onclick="switchYear('2025', this)">
-        2025
-    </div>
+<div class="tab active"
+onclick="event.stopPropagation(); toggleYearMenu()">
 
-    <div class="tab"
-    onclick="switchYear('2024', this)">
-        2024
-    </div>
+<span id="selectedYear">
+2024
+</span>
 
-  `;
+<span class="material-symbols-rounded">
+expand_more
+</span>
+
+</div>
+
+
+<div class="year-menu" id="yearMenu">
+
+<div onclick="event.stopPropagation(); selectYear('2026')">
+2026
+</div>
+
+<div onclick="event.stopPropagation(); selectYear('2025')">
+2025
+</div>
+
+<div onclick="event.stopPropagation(); selectYear('2024')">
+2024
+</div>
+
+</div>
+
+</div>
+
+`;
 
 
   const root = document.getElementById("videoRoot");
@@ -418,9 +440,54 @@ oninput="searchVideo()">
 
   loadVideos(
     chapterKeyFromName(chapterName),
-    "2025"
+    "2024"
 );
 
+
+}
+
+function toggleYearMenu(){
+
+document
+.getElementById("yearMenu")
+.classList.toggle("show");
+
+}
+
+document.addEventListener("click", function(e){
+
+    const dropdown = document.querySelector(".year-dropdown");
+    const menu = document.getElementById("yearMenu");
+
+    if(!dropdown || !menu) return;
+
+
+    // kalau klik luar dropdown
+    if(!dropdown.contains(e.target)){
+
+        menu.classList.remove("show");
+
+    }
+
+});
+
+
+function selectYear(year){
+
+document
+.getElementById("selectedYear")
+.innerHTML=year;
+
+
+document
+.getElementById("yearMenu")
+.classList.remove("show");
+
+
+loadVideos(
+chapterKeyFromName(selectedChapter),
+year
+);
 
 }
 
@@ -559,22 +626,25 @@ document.querySelectorAll(".tab")
 el.classList.add("active");
 
 
-
 const slider=document.getElementById("tabSlider");
 
 
-if(year==="2024"){
-
-slider.style.transform="translateX(100%)";
-
-}else{
+if(year==="2026"){
 
 slider.style.transform="translateX(0%)";
 
 }
+else if(year==="2025"){
 
+slider.style.transform="translateX(100%)";
 
-// sini nanti load video ikut tahun
+}
+else if(year==="2024"){
+
+slider.style.transform="translateX(200%)";
+
+}
+
 
 loadVideos(
 chapterKeyFromName(selectedChapter),
