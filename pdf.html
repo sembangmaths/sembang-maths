@@ -30,10 +30,8 @@
 
 <div class="sidebar" id="sidebar">
 
-    <div class="sidebar-profile" onclick="checkProfile()">
-    <span class="material-symbols-rounded" id="profileIcon">
-        person
-    </span>
+<div class="sidebar-profile" onclick="checkProfile()">
+    <div id="profileIcon"></div>
 </div>
     
 
@@ -667,42 +665,23 @@ const firebaseConfig = {
 
 
 const app = initializeApp(firebaseConfig);
-
 const auth = getAuth(app);
 
-// CHECK LOGIN STATUS
 
 window.userLogged = false;
 
 
 onAuthStateChanged(auth, (user)=>{
 
-
     if(user){
-
-        console.log("User login:", user.email);
 
         window.userLogged = true;
 
-
-        document.getElementById("profileIcon").textContent =
-        "account_circle";
-
-
     }else{
-
-
-        console.log("Belum login");
 
         window.userLogged = false;
 
-
-        document.getElementById("profileIcon").textContent =
-        "person";
-
-
     }
-
 
 });
 
@@ -713,25 +692,15 @@ onAuthStateChanged(auth, (user)=>{
 
 window.checkProfile = function(){
 
-
-    if(window.userLogged){
-
-
-        window.location.href="profile.html";
-
-
-    }else{
-
-
-        window.location.href="login.html";
-
-
-    }
-
+    window.location.href = window.userLogged 
+        ? "profile.html" 
+        : "login.html";
 
 }
 
 </script>
+
+<script type="module" src="user-profile.js"></script>
 
 </body>
 
