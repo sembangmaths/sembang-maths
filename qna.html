@@ -287,6 +287,11 @@ window.userLogged = false;
 
 onAuthStateChanged(auth, (user)=>{
 
+    currentUser = user;
+
+    authReady = true;
+
+
     if(user){
 
         window.userLogged = true;
