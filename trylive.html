@@ -917,10 +917,14 @@ function listenChat(){
 
     onSnapshot(q, (snapshot) => {
 
-        // 🔥 CLEAR + RENDER FULL LIST
-        box.innerHTML = "";
+const wasNearBottom =
+    box.scrollTop + box.clientHeight >= box.scrollHeight - 80;
 
-        const docs = snapshot.docs.reverse(); // supaya oldest → newest
+
+// CLEAR + RENDER
+box.innerHTML = "";
+
+const docs = snapshot.docs.reverse();
 
         docs.forEach(docSnap => {
             const data = docSnap.data();
@@ -949,25 +953,18 @@ function listenChat(){
             box.appendChild(div);
         });
 
-        // 🔥 FIRST LOAD → scroll bawah
-        if(!initialScrollDone){
-            requestAnimationFrame(() => {
-                box.scrollTop = box.scrollHeight;
-            });
+requestAnimationFrame(()=>{
 
-            initialScrollDone = true;
-            return;
-        }
+    if(!initialScrollDone || wasNearBottom){
 
-        // 🔥 SMART AUTO SCROLL
-        const nearBottom = 
-            box.scrollTop + box.clientHeight >= box.scrollHeight - 50;
+        box.scrollTop = box.scrollHeight;
 
-        if(nearBottom){
-            requestAnimationFrame(() => {
-                box.scrollTop = box.scrollHeight;
-            });
-        }
+    }
+
+});
+
+
+initialScrollDone = true;
     });
 }
 
