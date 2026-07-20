@@ -312,17 +312,163 @@ body{
     50%{opacity:0.2;}
     100%{opacity:1;}
 }
-
-/* ================= HOME HERO ================= */
+/* ================= PREMIUM FUTURISTIC HERO ================= */
 
 .home-hero{
+
+    position:relative;
+    overflow:hidden;
+
     margin:20px;
-    padding:32px 25px;
-    border-radius:28px;
+    padding:15px 28px;
+
+    border-radius:32px;
+
     background:#5f0e25;
+
     color:white;
-    box-shadow:0 15px 40px rgba(122,18,48,.25);
+
+    box-shadow:
+    0 25px 60px rgba(95,14,37,.45);
+
 }
+
+
+
+/* Cahaya halus bergerak */
+
+.home-hero::before{
+
+    content:"";
+
+    position:absolute;
+
+    width:450px;
+    height:450px;
+
+    top:-250px;
+    right:-180px;
+
+    background:
+    radial-gradient(
+    circle,
+    rgba(255,255,255,.25),
+    rgba(255,255,255,.08) 35%,
+    transparent 70%
+    );
+
+    filter:blur(20px);
+
+    animation:
+    heroGlow 8s ease-in-out infinite;
+
+}
+
+
+/* Light beam */
+
+.home-hero::after{
+
+    content:"";
+
+    position:absolute;
+
+    top:-50%;
+    left:-100px;
+
+    width:200px;
+    height:200%;
+
+    background:
+    linear-gradient(
+    90deg,
+    transparent,
+    rgba(255,255,255,.15),
+    transparent
+    );
+
+    transform:rotate(25deg);
+
+    animation:
+    lightMove 7s ease-in-out infinite;
+
+}
+
+
+
+.home-hero>*{
+
+    position:relative;
+    z-index:2;
+
+}
+
+
+
+@keyframes heroGlow{
+
+0%,100%{
+
+transform:
+translate(0,0)
+scale(1);
+
+opacity:.5;
+
+}
+
+
+50%{
+
+transform:
+translate(-50px,50px)
+scale(1.25);
+
+opacity:.8;
+
+}
+
+}
+
+
+
+@keyframes lightMove{
+
+0%{
+
+left:-150px;
+
+opacity:0;
+
+}
+
+
+20%{
+
+opacity:1;
+
+}
+
+
+70%{
+
+opacity:1;
+
+}
+
+
+100%{
+
+left:120%;
+
+opacity:0;
+
+}
+
+}
+
+
+
 
 .hero-tag{
     display:inline-block;
@@ -335,7 +481,7 @@ body{
 }
 
 .home-hero h1{
-    font-size:32px;
+    font-size:20px;
     line-height:1.15;
     margin:0;
 }
@@ -382,7 +528,7 @@ body{
 
 .feature-card{
     position:relative;
-    background:rgba(255,255,255,.45);
+    background:white;
     backdrop-filter:blur(15px);
     -webkit-backdrop-filter:blur(15px);
     border-radius:22px;
