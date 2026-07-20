@@ -418,3 +418,27 @@ color:#7a1230;
     }
 }
 
+.bookmark-icon{
+
+    font-size:22px;
+    color:#7a1230;
+
+    font-variation-settings:
+    'FILL' 0,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz' 24;
+
+}
+
+
+.bookmark-icon.active{
+
+    font-variation-settings:
+    'FILL' 1,
+    'wght' 300,
+    'GRAD' 0,
+    'opsz' 24;
+
+}
+
