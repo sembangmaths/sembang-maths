@@ -16,7 +16,7 @@
 <link rel="manifest" href="manifest.json">
 
 <!-- ICON FONT -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200" rel="stylesheet">
 
 <link rel="stylesheet" href="pdf.css">
 
@@ -33,27 +33,37 @@
 <div class="sidebar-profile" onclick="checkProfile()">
     <div id="profileIcon"></div>
 </div>
-    
+
 
 <div class="menu-item" onclick="setActive(this); window.location.href='index.html'">
     <span class="material-symbols-rounded">home</span>
     <div class="label">Home</div>
 </div>
 
+
 <div class="menu-item" onclick="setActive(this); window.location.href='video.html'">
     <span class="material-symbols-rounded">play_circle</span>
     <div class="label">Video</div>
 </div>
+
 
 <div class="menu-item active" onclick="setActive(this)">
     <span class="material-symbols-rounded">description</span>
     <div class="label">PDF</div>
 </div>
 
+
 <div class="menu-item" onclick="window.location.href='qna.html'">
     <span class="material-symbols-rounded">forum</span>
     <div class="label">Q&A</div>
 </div>
+
+
+<div class="menu-item" onclick="window.location.href='favourite.html'">
+    <span class="material-symbols-rounded">bookmark</span>
+    <div class="label">Favourite</div>
+</div>
+
 
 </div>
 
@@ -75,6 +85,9 @@
 let selectedTrial = "";
 let pdfCurrent = "";
 let allPDF = [];
+let firebaseChecked = false;
+
+window.firebaseReady = false;
 
 const PDF_CACHE_VERSION = "version 1";
 
@@ -184,7 +197,12 @@ function openTrial(trialName, slug){
 
     location.hash = "folder=" + slug;
 
+    if(firebaseChecked){
+
     loadPDF(trialName);
+
+}
+
 }
 
 function backToPdfRoot(){
@@ -427,15 +445,17 @@ allPDF
 
                 </div>
 
-                <div onclick="copyPDFLink('${item.FileId}')"
+                <div onclick="toggleFavouritePDF('${item.FileId}')"
                     style="padding:8px; cursor:pointer;">
 
-                    <span class="material-symbols-rounded"
-                            style="font-size:22px; color:#7a1230;">
-                        link
-                    </span>
+<span class="material-symbols-rounded bookmark-icon 
+${window.favouritePDF.includes(item.FileId) ? "active" : ""}">
 
-        </div>
+    bookmark
+
+</span>
+
+                </div>
 
             </div>
             `;
@@ -663,6 +683,15 @@ getAuth,
 onAuthStateChanged
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 
+import {
+getFirestore,
+doc,
+getDoc,
+updateDoc,
+arrayUnion,
+arrayRemove
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
 
 const firebaseConfig = {
 
@@ -678,22 +707,123 @@ const firebaseConfig = {
 
 const app = initializeApp(firebaseConfig);
 const auth = getAuth(app);
+const db = getFirestore(app);
+
+window.currentUserUID = null;
+window.favouritePDF = [];
 
 
 window.userLogged = false;
 
+window.toggleFavouritePDF = async function(fileId){
 
-onAuthStateChanged(auth, (user)=>{
 
-    if(user){
+if(!window.userLogged){
 
-        window.userLogged = true;
+    alert("Please login first.");
 
-    }else{
+    return;
 
-        window.userLogged = false;
+}
+
+
+
+const userRef = doc(
+    db,
+    "users",
+    window.currentUserUID
+);
+
+
+
+if(window.favouritePDF.includes(fileId)){
+
+
+await updateDoc(
+    userRef,
+    {
+        favouritePDF:
+        arrayRemove(fileId)
+    }
+);
+
+
+
+window.favouritePDF =
+window.favouritePDF.filter(
+id=>id!==fileId
+);
+
+
+
+}else{
+
+
+await updateDoc(
+    userRef,
+    {
+        favouritePDF:
+        arrayUnion(fileId)
+    }
+);
+
+
+
+window.favouritePDF.push(fileId);
+
+
+}
+
+
+
+loadPDF(selectedTrial);
+
+
+}
+
+
+onAuthStateChanged(auth, async(user)=>{
+
+
+if(user){
+
+    window.userLogged = true;
+    window.currentUserUID = user.uid;
+
+
+    const snap = await getDoc(
+        doc(db,"users",user.uid)
+    );
+
+
+    if(snap.exists()){
+
+        window.favouritePDF =
+        snap.data().favouritePDF || [];
 
     }
+
+
+}else{
+
+    window.userLogged = false;
+    window.currentUserUID = null;
+    window.favouritePDF = [];
+
+}
+
+
+// Firebase dah selesai check
+firebaseChecked = true;
+
+
+// Kalau user dah buka folder sebelum Firebase siap
+if(selectedTrial){
+
+    loadPDF(selectedTrial);
+
+}
+
 
 });
 
