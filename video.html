@@ -16,7 +16,7 @@
 <link rel="manifest" href="manifest.json">
 
 <!-- ICON FONT -->
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,100..700,0..1,0..200" rel="stylesheet">
 
 <link rel="stylesheet" href="video.css">
 
@@ -45,24 +45,29 @@
 </div>
   
 
-  <div class="menu-item" onclick="setActive(this); window.location.href='index.html'">
-    <span class="material-symbols-rounded">home</span>
-    <div class="label">Home</div>
-  </div>
+<div class="menu-item" onclick="setActive(this); window.location.href='index.html'">
+  <span class="material-symbols-rounded">home</span>
+  <div class="label">Home</div>
+</div>
 
-  <div class="menu-item active" onclick="setActive(this)">
-    <span class="material-symbols-rounded">play_circle</span>
-    <div class="label">Video</div>
-  </div>
+<div class="menu-item active" onclick="setActive(this)">
+  <span class="material-symbols-rounded">play_circle</span>
+  <div class="label">Video</div>
+</div>
 
-  <div class="menu-item" onclick="setActive(this); window.location.href='pdf.html'">
-    <span class="material-symbols-rounded">description</span>
-    <div class="label">PDF</div>
-  </div>
+<div class="menu-item" onclick="setActive(this); window.location.href='pdf.html'">
+  <span class="material-symbols-rounded">description</span>
+  <div class="label">PDF</div>
+</div>
 
-  <div class="menu-item" onclick="setActive(this); window.location.href='qna.html'">
-    <span class="material-symbols-rounded">forum</span>
-    <div class="label">Q&A</div>
+<div class="menu-item" onclick="setActive(this); window.location.href='qna.html'">
+  <span class="material-symbols-rounded">forum</span>
+  <div class="label">Q&A</div>
+</div>
+
+<div class="menu-item" onclick="setActive(this); window.location.href='favourite.html'">
+  <span class="material-symbols-rounded">bookmark</span>
+  <div class="label">Favourite</div>
 </div>
 
 </div>
@@ -403,6 +408,8 @@ expand_more
 2024
 </div>
 
+
+
 </div>
 
 </div>
@@ -697,6 +704,9 @@ import {
 getFirestore,
 doc,
 getDoc,
+updateDoc,
+arrayUnion,
+arrayRemove,
 enableIndexedDbPersistence
 }
 from
@@ -846,8 +856,11 @@ window.allVideos.forEach(v=>{
 
 html += `
 
-<div class="video-item"
-onclick="playYoutube('${v.id}')">
+<div class="video-item">
+
+
+<div onclick="playYoutube('${v.id}')"
+style="flex:1;display:flex;gap:14px;align-items:center;">
 
 
 <img 
@@ -865,6 +878,31 @@ ${v.title}
 <div class="video-author">
 Sir Maududi
 </div>
+
+
+</div>
+
+
+</div>
+
+
+
+<div onclick="toggleFavouriteVideo(event,'${v.id}','${chapterKey}')"
+style="padding:8px;cursor:pointer;">
+
+
+<span class="material-symbols-rounded bookmark-icon
+${
+window.favouriteVideo.some(
+x=>x.id===v.id
+)
+?"active":""
+}
+">
+
+bookmark
+
+</span>
 
 
 </div>
@@ -924,6 +962,104 @@ overlay.style.display="flex";
 
 }
 
+window.toggleFavouriteVideo = async function(e,id,chapter){
+
+
+e.stopPropagation();
+
+
+if(!window.userLogged){
+
+alert("Please login first");
+
+return;
+
+}
+
+
+const ref = doc(
+db,
+"users",
+window.currentUserUID
+);
+
+
+
+const exist =
+window.favouriteVideo.find(
+x=>x.id===id
+);
+
+
+
+if(exist){
+
+
+await updateDoc(
+ref,
+{
+favouriteVideo:
+arrayRemove(exist)
+}
+);
+
+
+window.favouriteVideo =
+window.favouriteVideo.filter(
+x=>x.id!==id
+);
+
+
+
+}else{
+
+
+const video =
+window.allVideos.find(
+v=>v.id===id
+);
+
+
+const item={
+
+id:id,
+
+title:video.title,
+
+thumbnail:
+"https://img.youtube.com/vi/"+id+"/mqdefault.jpg",
+
+chapter:chapter
+
+};
+
+
+await updateDoc(
+ref,
+{
+favouriteVideo:
+arrayUnion(item)
+}
+);
+
+
+window.favouriteVideo.push(item);
+
+
+}
+
+
+
+loadVideos(
+chapter,
+document.getElementById("selectedYear")?.innerText || "2024"
+);
+
+
+}
+
+
+
 window.closePlayer=function(){
 
 const overlay=document.getElementById("playerOverlay");
@@ -939,6 +1075,10 @@ player.src="";
 
 window.userAccess={};
 
+window.favouriteVideo=[];
+
+window.currentUserUID=null;
+
 
 
 
@@ -953,14 +1093,66 @@ window.backToVideoRoot = backToVideoRoot;
 
 window.userLogged = false;
 
+async function cleanFavouriteVideo(){
+
+const allowed = [];
+
+
+for(const item of window.favouriteVideo){
+
+
+if(
+window.userAccess[item.chapter] === true
+||
+
+freeChapters.includes(item.chapter)
+
+){
+
+allowed.push(item);
+
+}
+
+
+}
+
+
+if(
+allowed.length !== window.favouriteVideo.length
+){
+
+
+await updateDoc(
+
+doc(
+db,
+"users",
+window.currentUserUID
+),
+
+{
+favouriteVideo:allowed
+}
+
+);
+
+
+window.favouriteVideo = allowed;
+
+
+}
+
+
+}
 
 onAuthStateChanged(auth,async(user)=>{
 
 
 if(user){
 
-
 window.userLogged = true;
+
+window.currentUserUID = user.uid;
 
 
 // ambil access user
@@ -974,10 +1166,21 @@ if(snap.exists()){
 window.userAccess =
 snap.data().access || {};
 
+
+window.favouriteVideo =
+snap.data().favouriteVideo || [];
+
+
+// bersihkan favourite yang tiada access
+await cleanFavouriteVideo();
+
+
 }
 else{
 
 window.userAccess={};
+
+window.favouriteVideo=[];
 
 }
 
@@ -1045,8 +1248,7 @@ return v.title.toLowerCase().includes(keyword);
 
 html += `
 
-<div class="video-item"
-onclick="playYoutube('${v.id}')">
+<div class="video-item">
 
 
 <img 
