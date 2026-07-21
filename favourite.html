@@ -19,6 +19,16 @@
 
 <body>
 
+<div id="favouriteLoading">
+
+    <div class="favourite-loader"></div>
+
+    <p>
+        Loading...
+    </p>
+
+</div>
+
 
 <div class="overlay" onclick="closeSidebar()" id="overlay"></div>
 
@@ -140,6 +150,8 @@ const PDF_API =
 
 let allPDF=[];
 let pdfCurrent="";
+let favouriteVideo=[];
+let videoData=[];
 
 
 
@@ -199,6 +211,13 @@ Favourite
 
 
 
+<h3 class="fav-title">Video</h3>
+
+<div id="videoItems"></div>
+
+
+<h3 class="fav-title">PDF</h3>
+
 <div id="pdfItems"></div>
 
 
@@ -223,16 +242,120 @@ allPDF = await res.json();
 function renderFavourite(){
 
 
-const root =
-document.getElementById("pdfItems");
+const root=document.getElementById("videoItems");
 
 
-const fav =
-window.favouritePDF || [];
+const fav=window.favouriteVideo || [];
 
 
+if(fav.length===0){
 
-const list =
+root.innerHTML=`
+
+<div style="
+text-align:center;
+padding:30px;
+color:#777;
+">
+
+You haven't added any favourite videos yet.
+
+</div>
+
+`;
+
+return;
+
+}
+
+
+let html="";
+
+
+fav.forEach(v=>{
+
+
+html+=`
+
+<div class="pdf-card"
+style="
+display:flex;
+align-items:center;
+gap:14px;
+">
+
+
+<div onclick="openVideo('${v.id}')"
+style="
+flex:1;
+display:flex;
+align-items:center;
+gap:14px;
+cursor:pointer;
+">
+
+
+<img 
+src="${v.thumbnail}"
+style="
+width:130px;
+border-radius:12px;
+">
+
+
+<div class="pdf-info">
+
+<div class="pdf-title">
+${v.title}
+</div>
+
+
+<div class="pdf-author">
+Sir Maududi
+</div>
+
+
+</div>
+
+
+</div>
+
+
+<div onclick="removeFavouriteVideo(event,'${v.id}')"
+style="
+padding:8px;
+cursor:pointer;
+">
+
+<span class="material-symbols-rounded bookmark-icon active">
+bookmark
+</span>
+
+</div>
+
+
+</div>
+
+`;
+
+});
+
+
+root.innerHTML=html;
+
+
+}
+
+function renderFavouritePDF(){
+
+
+const root=document.getElementById("pdfItems");
+
+
+const fav=window.favouritePDF || [];
+
+
+const list=
 allPDF.filter(item=>
 fav.includes(item.FileId)
 );
@@ -241,26 +364,23 @@ fav.includes(item.FileId)
 
 if(list.length===0){
 
-
 root.innerHTML=`
 
 <div style="
 text-align:center;
-padding:40px;
+padding:30px;
 color:#777;
 ">
 
-Tiada PDF Favourite
+You haven't added any favourite PDFs yet.
 
 </div>
 
 `;
 
-
 return;
 
 }
-
 
 
 
@@ -299,7 +419,6 @@ picture_as_pdf
 </div>
 
 
-
 <div class="pdf-info">
 
 <div class="pdf-title">
@@ -311,7 +430,6 @@ ${item.Title}
 Sir Maududi
 </div>
 
-
 </div>
 
 
@@ -319,8 +437,12 @@ Sir Maududi
 
 
 
-<div onclick="removeFavourite('${item.FileId}')"
-style="padding:8px;cursor:pointer;">
+<div onclick="removeFavourite(event,'${item.FileId}')"
+style="
+padding:8px;
+cursor:pointer;
+">
+
 
 <span class="material-symbols-rounded bookmark-icon active">
 
@@ -328,11 +450,11 @@ bookmark
 
 </span>
 
-</div>
-
 
 </div>
 
+
+</div>
 
 `;
 
@@ -344,6 +466,12 @@ root.innerHTML=html;
 
 }
 
+window.playFavourite=function(id){
+
+window.location.href=
+"video.html?play="+id;
+
+}
 
 
 
@@ -380,6 +508,38 @@ document.getElementById("pdfFrame")
 }
 
 
+window.openVideo=function(id){
+
+
+const player =
+document.getElementById("youtubePlayer");
+
+
+player.src =
+"https://www.youtube.com/embed/"
++id+
+"?autoplay=1";
+
+
+document.getElementById("playerOverlay")
+.style.display="flex";
+
+
+}
+
+
+window.closePlayer=function(){
+
+document.getElementById("playerOverlay")
+.style.display="none";
+
+
+document.getElementById("youtubePlayer")
+.src="";
+
+
+}
+
 
 
 </script>
@@ -415,7 +575,8 @@ getFirestore,
 doc,
 getDoc,
 updateDoc,
-arrayRemove
+arrayRemove,
+arrayUnion
 
 }
 from
@@ -449,21 +610,21 @@ const auth=getAuth(app);
 
 const db=getFirestore(app);
 
-window.removeFavourite = async function(fileId){
+window.removeFavourite = async function(e,fileId){
 
+e.stopPropagation();
 
 const user = auth.currentUser;
-
 
 if(!user) return;
 
 
 await updateDoc(
-    doc(db,"users",user.uid),
-    {
-        favouritePDF:
-        arrayRemove(fileId)
-    }
+doc(db,"users",user.uid),
+{
+favouritePDF:
+arrayRemove(fileId)
+}
 );
 
 
@@ -473,8 +634,41 @@ id=>id!==fileId
 );
 
 
-renderFavourite();
+renderFavouritePDF();
 
+}
+
+window.removeFavouriteVideo = async function(e,id){
+
+e.stopPropagation();
+
+const user = auth.currentUser;
+
+if(!user) return;
+
+
+const item =
+window.favouriteVideo.find(
+v=>v.id===id
+);
+
+
+await updateDoc(
+doc(db,"users",user.uid),
+{
+favouriteVideo:
+arrayRemove(item)
+}
+);
+
+
+window.favouriteVideo =
+window.favouriteVideo.filter(
+v=>v.id!==id
+);
+
+
+renderFavourite();
 
 }
 
@@ -506,8 +700,23 @@ doc(db,"users",user.uid)
 if(snap.exists()){
 
 
+const userData = snap.data();
+
+
 window.favouritePDF =
-snap.data().favouritePDF || [];
+userData.favouritePDF || [];
+
+
+
+window.favouriteVideo =
+(userData.favouriteVideo || [])
+.filter(v =>
+userData.access?.[v.chapter] === true
+);
+
+
+
+favouriteVideo = window.favouriteVideo;
 
 
 }
@@ -519,8 +728,11 @@ await fetchPDF();
 
 showPage();
 
-
 renderFavourite();
+
+renderFavouritePDF();
+
+document.getElementById("favouriteLoading").style.display="none";
 
 
 
@@ -556,6 +768,32 @@ window.userLogged
 
 
 <script type="module" src="user-profile.js"></script>
+
+<div id="playerOverlay"
+onclick="closePlayer()"
+style="
+display:none;
+position:fixed;
+inset:0;
+background:#000;
+z-index:4000;
+align-items:center;
+justify-content:center;
+">
+
+
+<iframe
+id="youtubePlayer"
+style="
+width:100%;
+height:100%;
+border:0;
+"
+allowfullscreen>
+</iframe>
+
+
+</div>
 
 
 </body>
