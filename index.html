@@ -35,24 +35,33 @@
     <div id="profileIcon"></div>
 </div>
 
-<div class="menu-item active" onclick="setActive(this);showPage('home')">
+<div class="menu-item active" onclick="setActive(this); showPage('home')">
     <span class="material-symbols-rounded">home</span>
     <div class="label">Home</div>
 </div>
 
-<div class="menu-item" onclick="window.location.href='video.html'">
+
+<div class="menu-item" onclick="setActive(this); window.location.href='video.html'">
     <span class="material-symbols-rounded">play_circle</span>
     <div class="label">Video</div>
 </div>
 
-<div class="menu-item" onclick="window.location.href='pdf.html'">
+
+<div class="menu-item" onclick="setActive(this); window.location.href='pdf.html'">
     <span class="material-symbols-rounded">description</span>
     <div class="label">PDF</div>
 </div>
 
-<div class="menu-item" onclick="window.location.href='qna.html'">
+
+<div class="menu-item" onclick="setActive(this); window.location.href='qna.html'">
     <span class="material-symbols-rounded">forum</span>
     <div class="label">Q&A</div>
+</div>
+
+
+<div class="menu-item" onclick="setActive(this); window.location.href='favourite.html'">
+    <span class="material-symbols-rounded">bookmark</span>
+    <div class="label">Favourite</div>
 </div>
 
 </div>
